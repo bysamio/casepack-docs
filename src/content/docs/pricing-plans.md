@@ -11,46 +11,57 @@ CasePack offers four subscription tiers designed for different team sizes and de
 
 > **€149/month** or **€1,490/year**
 
-Best for small teams getting started with incident documentation.
+Best for early design partners validating the workflow.
 
-- Up to **10 users**
-- **1 tenant**
-- Core features: Incidents, Evidence Vault
-- Badge: "Early Adopter"
+- **5 internal users**
+- **5 customer workspaces**
+- Unlimited incidents
+- Audit log, Evidence vault, Evidence pack export
+- Webhooks, NIS2 timeline milestones
+- Standard support + direct roadmap access
+- Badge: "Limited cohort"
 
 ### MSP Pro
 
 > **€249/month** or **€2,490/year**
 
-For growing MSPs managing multiple client environments.
+For MSPs standardising incident reporting across customers.
 
-- Up to **25 users**
-- **5 tenants**
-- All features: Incidents, Evidence Vault, Evidence Pack Export, Webhooks, NIS2 Timeline, Audit Log
-- Badge: "Most Popular"
+- **Unlimited internal users**
+- **10 customer workspaces**
+- Unlimited incidents
+- Audit log, Evidence vault, Evidence pack export
+- Webhooks / PSA intake, NIS2 timeline milestones
+- Priority support
+- Badge: "Most popular"
 
 ### Self-Host Standard
 
 > **€6,000/year** (annual billing only)
 
-For organizations requiring on-premises deployment.
+For regulated, security-sensitive, or procurement-heavy environments.
 
-- **Unlimited users**
-- **Unlimited tenants**
-- All features included
-- Self-hosted deployment support
-- Badge: "Full Control"
+- **50 users**
+- **25 customer workspaces**
+- 1 production + 1 staging instance
+- Instance activation + fingerprint binding
+- Signed license / JWKS validation
+- Keycloak / SSO support
+- S3-compatible object storage support
+- Standard support
 
 ### Partner / Enterprise
 
 > **Custom pricing**
 
-For large organizations and technology partners.
+For large MSP groups and custom environments.
 
-- Custom user and tenant limits
-- All features included
-- Dedicated support and SLA guarantees
+- Everything in Self-Host or Hosted Pro as needed
+- Higher / unlimited limits
+- White-label / branded exports
 - Custom integrations
+- SLA / onboarding
+- Procurement support
 - CTA: "Contact Sales"
 
 ## Billing Toggle
@@ -64,33 +75,32 @@ The pricing page includes a monthly/yearly toggle:
 
 | Feature | Founding Pilot | MSP Pro | Self-Host | Enterprise |
 |---------|---------------|---------|-----------|------------|
-| Incidents | ✓ | ✓ | ✓ | ✓ |
+| Internal Users | 5 | Unlimited | 50 | Unlimited |
+| Customer Workspaces | 5 | 10 | 25 | Unlimited |
+| Incidents | Unlimited | Unlimited | Unlimited | Unlimited |
+| Instances | 1 | 1 | 2 | Unlimited |
+| Audit Log | ✓ | ✓ | ✓ | ✓ |
 | Evidence Vault | ✓ | ✓ | ✓ | ✓ |
-| Evidence Pack Export | — | ✓ | ✓ | ✓ |
-| Webhooks (PSA) | — | ✓ | ✓ | ✓ |
-| NIS2 Timeline | — | ✓ | ✓ | ✓ |
-| Audit Log | — | ✓ | ✓ | ✓ |
-| Multi-Tenant | — | ✓ | ✓ | ✓ |
-| Custom Branding | — | — | ✓ | ✓ |
-| Priority Support | — | — | — | ✓ |
-| SLA Guarantee | — | — | — | ✓ |
-| On-Premises Deploy | — | — | ✓ | ✓ |
+| Evidence Pack Export | ✓ | ✓ | ✓ | ✓ |
+| Webhooks | ✓ | ✓ | ✓ | ✓ |
+| NIS2 Timelines | ✓ | ✓ | ✓ | ✓ |
+| Delivery Mode | Hosted | Hosted | Self-Host | Any |
+| Support | Standard | Priority | Standard | Dedicated |
 
 ## FAQ
 
-The pricing page includes a frequently asked questions section covering:
+The pricing page includes a frequently asked questions section:
 
-1. **What happens when my subscription expires?** — Grace period → read-only → export-only progression
-2. **Can I switch plans?** — Contact support to upgrade or downgrade
-3. **What payment methods are accepted?** — Credit card via Stripe
-4. **Is there a free trial?** — Contact sales for trial access
+1. **Why is there no free plan?** — CasePack is built for MSP teams handling real customer incidents. Guided pilots are preferred over freemium signups.
+2. **Why don't you charge per incident?** — Incident volume is the wrong incentive. CasePack is priced around operational value.
+3. **Why is self-host separate from hosted?** — Self-host buyers need deployment rights, license activation, SSO alignment, storage control, and a different support model.
+4. **Can we start hosted and move to self-host later?** — Yes. The pricing and licensing model supports a hosted-to-self-host transition path.
 
 ## Checkout Flow
 
 1. Select a plan on the pricing page
-2. Click the plan's CTA button (e.g., "Get Started", "Upgrade")
-3. You're redirected to the **Stripe Checkout** page
-4. Enter payment details and confirm
-5. On success, you're redirected back to CasePack with your plan activated
+2. Click the plan's CTA button (e.g., "Book founder pilot", "Book demo")
+3. Complete the checkout dialog with your email and company name
+4. On success, the licensing portal provisions your subscription
 
-> The checkout flow uses Stripe for secure payment processing. CasePack does not store payment card details.
+> The checkout flow uses the CasePack licensing portal for payment processing.
