@@ -1,0 +1,35 @@
+---
+title: Welcome to CasePack
+description: Incident documentation, evidence management, and compliance reporting for MSPs.
+template: splash
+hero:
+  tagline: Incident documentation, evidence management, and compliance reporting for MSPs.
+  actions:
+    - text: Quick Start Guide
+      link: /getting-started/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/bysamio/casepack-spa
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Core Features
+
+<CardGrid>
+  <LinkCard title="Dashboard" description="Real-time KPIs, recent incidents, and evidence activity at a glance." href="/dashboard/" />
+  <LinkCard title="Incidents" description="Create, manage, and track security incidents with rich filtering." href="/incidents/" />
+  <LinkCard title="Evidence" description="Upload, organize, and manage incident artifacts in one place." href="/evidence/" />
+  <LinkCard title="NIS2 Milestones" description="Opt-in NIS2 regulatory deadline tracking per incident." href="/milestones/" />
+</CardGrid>
+
+## Integrations & Administration
+
+<CardGrid>
+  <LinkCard title="Webhooks" description="Receive incidents from ConnectWise, HaloPSA, Autotask, and more." href="/webhooks/" />
+  <LinkCard title="Evidence Pack Export" description="Generate audit-ready PDF or ZIP evidence packs." href="/evidence-pack-export/" />
+  <LinkCard title="Users & Roles" description="Two-tier role system with tenant and account roles." href="/users-roles/" />
+  <LinkCard title="Self-Hosting" description="Deploy on your own infrastructure with Docker or Kubernetes." href="/self-hosting/" />
+</CardGrid>

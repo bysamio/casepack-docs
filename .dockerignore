@@ -1,0 +1,10 @@
+.git
+.gitignore
+.astro
+node_modules
+dist
+*.md
+.DS_Store
+.env*
+infrastructure
+.github

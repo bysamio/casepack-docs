@@ -1,0 +1,30 @@
+# Staging values for casepack-docs
+
+replicaCount: 1
+
+image:
+  tag: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    nginx.ingress.kubernetes.io/whitelist-source-range: "10.8.0.0/24"
+  hosts:
+    - host: staging.docs.casepack.app
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: casepack-docs-staging-tls
+      hosts:
+        - staging.docs.casepack.app
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 16Mi
+  limits:
+    cpu: 100m
+    memory: 32Mi

@@ -1,0 +1,136 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 0.1.0)"
+        required: true
+        type: string
+      next_bump:
+        description: "Version bump to apply on main after the release tag"
+        required: true
+        type: choice
+        default: minor
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  packages: write
+  actions: write
+
+jobs:
+  release:
+    name: Bump, Tag & Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Pull latest changes
+        run: git pull --rebase origin main
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Validate release version and calculate next snapshot
+        id: versions
+        shell: bash
+        run: |
+          VERSION="${{ inputs.version }}"
+          NEXT_BUMP="${{ inputs.next_bump }}"
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release version must be a plain SemVer version like 0.1.0" >&2
+            exit 1
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+          case "$NEXT_BUMP" in
+            patch)
+              NEXT_DEV="${MAJOR}.${MINOR}.$((PATCH + 1))-dev"
+              ;;
+            minor)
+              NEXT_DEV="${MAJOR}.$((MINOR + 1)).0-dev"
+              ;;
+            major)
+              NEXT_DEV="$((MAJOR + 1)).0.0-dev"
+              ;;
+            *)
+              echo "Unsupported next_bump: $NEXT_BUMP" >&2
+              exit 1
+              ;;
+          esac
+
+          echo "release_version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "next_dev=$NEXT_DEV" >> "$GITHUB_OUTPUT"
+          echo "Release version: $VERSION"
+          echo "Next dev version: $NEXT_DEV"
+
+      - name: Bump package.json version
+        run: npm version ${{ steps.versions.outputs.release_version }} --no-git-tag-version --allow-same-version
+
+      - name: Update Chart.yaml version
+        run: |
+          CHART="infrastructure/helm/charts/casepack-docs/Chart.yaml"
+          sed -i "s/^version:.*/version: ${{ steps.versions.outputs.release_version }}/" "$CHART"
+          sed -i "s/^appVersion:.*/appVersion: \"${{ steps.versions.outputs.release_version }}\"/" "$CHART"
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json infrastructure/helm/charts/casepack-docs/Chart.yaml
+          git diff --cached --quiet || git commit -m "chore: release v${{ steps.versions.outputs.release_version }}"
+          git push
+
+      - name: Create tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag "v${{ steps.versions.outputs.release_version }}"
+          git push origin "v${{ steps.versions.outputs.release_version }}"
+          gh release create "v${{ steps.versions.outputs.release_version }}" \
+            --title "v${{ steps.versions.outputs.release_version }}" \
+            --generate-notes
+
+      - name: Trigger release CI/CD pipeline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run build-publish.yml \
+            --ref "v${{ steps.versions.outputs.release_version }}" \
+            -f version="${{ steps.versions.outputs.release_version }}"
+          echo "Triggered release CI/CD pipeline for v${{ steps.versions.outputs.release_version }}"
+
+      - name: Bump main to next dev version
+        run: npm version ${{ steps.versions.outputs.next_dev }} --no-git-tag-version --allow-same-version
+
+      - name: Update Chart.yaml to next dev version
+        run: |
+          CHART="infrastructure/helm/charts/casepack-docs/Chart.yaml"
+          sed -i "s/^version:.*/version: ${{ steps.versions.outputs.next_dev }}/" "$CHART"
+          sed -i "s/^appVersion:.*/appVersion: \"${{ steps.versions.outputs.next_dev }}\"/" "$CHART"
+
+      - name: Commit next dev bump
+        run: |
+          git add package.json package-lock.json infrastructure/helm/charts/casepack-docs/Chart.yaml
+          git diff --cached --quiet || git commit -m "chore: start ${{ steps.versions.outputs.next_dev }}"
+          git push
+
+      - name: Trigger main CI/CD pipeline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run build-publish.yml --ref main
+          echo "Triggered main CI/CD pipeline for ${{ steps.versions.outputs.next_dev }}"

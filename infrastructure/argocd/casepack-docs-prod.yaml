@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: casepack-docs-prod
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: casepack-prod
+  sources:
+    - repoURL: ghcr.io/bysamio/charts
+      chart: casepack-docs
+      targetRevision: 0.1.0
+      helm:
+        releaseName: casepack-docs
+        valueFiles:
+          - $values/infrastructure/helm/casepack-docs/values-prod.yaml
+    - repoURL: https://github.com/bysamio/casepack-docs.git
+      targetRevision: main
+      ref: values
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: false
+    syncOptions:
+      - CreateNamespace=false

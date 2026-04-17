@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: casepack-docs-staging
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: casepack-staging
+  sources:
+    - repoURL: ghcr.io/bysamio/charts
+      chart: casepack-docs
+      targetRevision: 0.1.0
+      helm:
+        releaseName: casepack-docs
+        valueFiles:
+          - $values/infrastructure/helm/casepack-docs/values-staging.yaml
+    - repoURL: https://github.com/bysamio/casepack-docs.git
+      targetRevision: main
+      ref: values
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=false

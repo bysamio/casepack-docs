@@ -1,0 +1,183 @@
+/* CasePack Documentation Theme
+ * Matches the CasePack SPA design system:
+ * - Inter font family
+ * - Blue-gray monochrome palette (hue 220°)
+ * - Vivid blue accent (hsl 215, 92%, 52%)
+ * - 0.625rem base border radius
+ *
+ * IMPORTANT: Starlight uses semantic color naming:
+ *   --sl-color-white  = foreground / text  (dark in light mode, light in dark mode)
+ *   --sl-color-black  = background         (light in light mode, dark in dark mode)
+ *   gray-1 → gray-7   = foreground-to-background gradient
+ */
+
+/* ── Typography ── */
+:root {
+  --sl-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  --sl-font-system-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
+    Consolas, 'Liberation Mono', monospace;
+}
+
+/* ── Light Mode ── */
+:root[data-theme='light'] {
+  /* Accent — CasePack vivid blue */
+  --sl-color-accent-low: #dbeafe;
+  --sl-color-accent: #2563eb;
+  --sl-color-accent-high: #1e3a5f;
+
+  /* Semantic gray scale: white = text (dark), black = bg (light) */
+  --sl-color-white: #1e2330;   /* darkest — primary text */
+  --sl-color-gray-1: #374151;  /* secondary text */
+  --sl-color-gray-2: #4b5563;  /* muted text */
+  --sl-color-gray-3: #6b7280;  /* subtle text / icons */
+  --sl-color-gray-4: #9ca3af;  /* placeholder text */
+  --sl-color-gray-5: #d1d5db;  /* borders */
+  --sl-color-gray-6: #f1f3f5;  /* subtle bg, sidebar bg */
+  --sl-color-gray-7: #f8f9fa;  /* nav bg */
+  --sl-color-black: #ffffff;   /* lightest — page background */
+}
+
+/* ── Dark Mode ── */
+:root[data-theme='dark'] {
+  /* Accent — slightly brighter for dark bg */
+  --sl-color-accent-low: #1e3a5f;
+  --sl-color-accent: #3b82f6;
+  --sl-color-accent-high: #bfdbfe;
+
+  /* Semantic gray scale: white = text (light), black = bg (dark) */
+  --sl-color-white: #f1f3f5;   /* lightest — primary text */
+  --sl-color-gray-1: #c4c9d2;  /* secondary text */
+  --sl-color-gray-2: #8b92a0;  /* muted text */
+  --sl-color-gray-3: #5c6478;  /* subtle text */
+  --sl-color-gray-4: #3d4555;  /* borders (dark) */
+  --sl-color-gray-5: #2e3444;  /* elevated surfaces */
+  --sl-color-gray-6: #1e2330;  /* sidebar / nav bg */
+  --sl-color-black: #131720;   /* darkest — page background */
+}
+
+/* ── Content Typography ── */
+.sl-markdown-content {
+  font-size: 0.975rem;
+  line-height: 1.75;
+}
+
+.sl-markdown-content h1 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.sl-markdown-content h2 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-top: 2.5rem;
+}
+
+.sl-markdown-content h3 {
+  font-weight: 600;
+}
+
+/* Table styling — match CasePack's clean table look */
+.sl-markdown-content table {
+  font-size: 0.875rem;
+}
+
+.sl-markdown-content th {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Blockquote — use accent border like CasePack info boxes */
+.sl-markdown-content blockquote {
+  border-left-color: var(--sl-color-accent);
+  background: var(--sl-color-gray-6);
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 0.75rem 1rem;
+}
+
+.sl-markdown-content blockquote p {
+  color: var(--sl-color-gray-2);
+}
+
+/* Inline code — readable background with clear contrast */
+.sl-markdown-content :not(pre) > code {
+  background: var(--sl-color-bg-inline-code);
+  color: var(--sl-color-white);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.85em;
+}
+
+/* Code blocks — rounded corners */
+.sl-markdown-content pre {
+  border-radius: 0.625rem;
+  border: 1px solid var(--sl-color-gray-5);
+}
+
+/* ── Site Header ── */
+header.header {
+  backdrop-filter: blur(12px);
+}
+
+/* Logo sizing */
+.site-title img {
+  height: 1.75rem;
+  width: auto;
+}
+
+/* ── Sidebar refinements ── */
+nav.sidebar .top-level > li > details > summary,
+nav.sidebar .top-level > li > a {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sl-color-gray-3);
+}
+
+/* Sidebar link hover */
+nav.sidebar a:not([aria-current='page']):hover {
+  color: var(--sl-color-white);
+  background-color: var(--sl-color-gray-6);
+  border-radius: 0.25rem;
+}
+
+/* Active link accent */
+nav.sidebar a[aria-current='page'] {
+  font-weight: 600;
+}
+
+/* ── Pagination — reduce size ── */
+.pagination-links a {
+  padding: 0.625rem 0.75rem;
+}
+
+.pagination-links .link-title {
+  font-size: var(--sl-text-lg);
+}
+
+/* ── Hero primary action — better contrast ── */
+.hero > .action a.primary {
+  background-color: var(--sl-color-accent);
+  color: #fff;
+  border-color: var(--sl-color-accent);
+}
+
+.hero > .action a.primary:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+/* ── Smooth scroll ── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Focus ring — match CasePack's accent ring ── */
+:focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
