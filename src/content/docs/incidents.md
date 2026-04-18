@@ -56,6 +56,7 @@ Click any incident to view its detail page with editable fields and tabbed secti
 | **NIS2 Milestones** | `nis2Timeline` | NIS2 reporting milestones (opt-in) |
 | **Reports** | `incidentReports` | Generate structured reports from templates |
 | **Exports** | `evidencePackExport` | Generate and download evidence packs |
+| **Timeline** | `incidentReports` | Chronological event feed with CRUD |
 
 Each tab shows a badge with the item count. The Milestones tab shows an overdue count badge in red when applicable.
 
