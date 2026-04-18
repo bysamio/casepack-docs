@@ -84,6 +84,7 @@ The pricing page includes a monthly/yearly toggle:
 | Evidence Pack Export | ✓ | ✓ | ✓ | ✓ |
 | Webhooks | ✓ | ✓ | ✓ | ✓ |
 | NIS2 Timelines | ✓ | ✓ | ✓ | ✓ |
+| Incident Reports | ✓ | ✓ | ✓ | ✓ |
 | Delivery Mode | Hosted | Hosted | Self-Host | Any |
 | Support | Standard | Priority | Standard | Dedicated |
 

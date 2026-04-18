@@ -54,6 +54,7 @@ Click any incident to view its detail page with editable fields and tabbed secti
 |-----|-------------|---------|
 | **Evidence** | `evidenceVault` | Upload and manage evidence files |
 | **NIS2 Milestones** | `nis2Timeline` | NIS2 reporting milestones (opt-in) |
+| **Reports** | `incidentReports` | Generate structured reports from templates |
 | **Exports** | `evidencePackExport` | Generate and download evidence packs |
 
 Each tab shows a badge with the item count. The Milestones tab shows an overdue count badge in red when applicable.
@@ -91,4 +92,5 @@ All four statuses are available from the status dropdown — transitions are not
 
 - [Evidence](/evidence/) — Uploading and managing artifacts
 - [Milestones](/milestones/) — Deadline tracking
+- [Incident Reports](/incident-reports/) — Generating structured reports from templates
 - [Evidence Pack Export](/evidence-pack-export/)

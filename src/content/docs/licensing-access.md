@@ -53,6 +53,7 @@ Features are controlled by your subscription plan via the `FeatureGate` componen
 | `evidencePackExport` | Evidence pack generation | Exports tab on incident detail |
 | `webhooks` | Inbound webhook configuration | Webhooks sidebar item and page |
 | `nis2Timeline` | NIS2 milestone tracking | Milestones tab, "Enable NIS2 Reporting" action |
+| `incidentReports` | Incident report generation | Reports tab on incident detail |
 
 When a feature is not included in your plan, the corresponding UI element shows an upgrade prompt instead of the feature content.
 
