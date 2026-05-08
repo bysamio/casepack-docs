@@ -47,6 +47,8 @@ Press **Cmd+K** (or **Ctrl+K** on Windows/Linux) to open the command palette:
 | Shortcut | Action |
 |----------|--------|
 | **Ctrl+U** / **Cmd+U** | Open file picker to upload evidence |
+| **Cmd+Enter** / **Ctrl+Enter** | Save the currently-edited Description, Root Cause, or Lessons Learned field |
+| **Escape** | Cancel inline editing of any field |
 
 ## Tips & Best Practices
 

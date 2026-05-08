@@ -39,14 +39,20 @@ Click any incident to view its detail page with editable fields and tabbed secti
 
 ### Editable Fields
 - **Title** — Click to edit inline (max 255 characters). Confirm with Enter, cancel with Escape.
-- **Description** — Click to edit inline (max 4000 characters). Save/Cancel buttons.
+- **Description** — Click to edit inline (max 4000 characters). Save with **Cmd/Ctrl+Enter** or the Save button; Escape cancels.
+- **Root Cause** — Click to edit inline (max 4000 characters). Capture what caused the incident once your investigation has concluded.
+- **Lessons Learned** — Click to edit inline (max 4000 characters). Document follow-ups, process changes, and detection gaps.
 - **Severity** — Inline dropdown: Low, Medium, High, Critical.
 - **Status** — Dropdown: Open, In Progress, Resolved, Closed.
+- **Affected Users** — Numeric input (≥ 0) on the metadata card. Press Enter or click outside to save; Escape reverts; clear the value to set it back to unknown.
 
 ### Metadata Cards
 - **Created** — Relative and absolute timestamp
 - **Reported by** — The user who created the incident (or "Unknown")
 - **Severity** — Current severity with inline edit
+- **Affected Users** — Inline numeric editor; left blank when unknown
+- **Resolved** — Shown once the incident is resolved; relative + absolute timestamp
+- **Last Updated** — Relative + absolute timestamp of the most recent change
 
 ### Tabs
 
@@ -56,7 +62,7 @@ Click any incident to view its detail page with editable fields and tabbed secti
 | **NIS2 Milestones** | `nis2Timeline` | NIS2 reporting milestones (opt-in) |
 | **Reports** | `incidentReports` | Generate structured reports from templates |
 | **Exports** | `evidencePackExport` | Generate and download evidence packs |
-| **Timeline** | `incidentReports` | Chronological event feed with CRUD |
+| **Timeline** | _none_ | Chronological event feed with CRUD (always available) |
 
 Each tab shows a badge with the item count. The Milestones tab shows an overdue count badge in red when applicable.
 
@@ -86,6 +92,8 @@ All four statuses are available from the status dropdown — transitions are not
 
 - Use consistent naming conventions for incident titles
 - Add a description referencing the PSA ticket ID for cross-reference
+- Capture **Root Cause** and **Lessons Learned** before closing — these power post-incident reviews and report templates
+- Track **Affected Users** as soon as you have an estimate; refine it as the investigation progresses
 - Upload evidence early and often — don't wait until the end
 - Use `N` on the incident list and `Ctrl+U` on the detail page for speed
 
