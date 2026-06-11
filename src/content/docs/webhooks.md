@@ -8,10 +8,10 @@ Webhooks allow external PSA tools and ticketing systems to automatically create 
 ## Overview
 
 - Webhooks are **tenant-scoped** — each tenant manages its own webhook configurations
-- Requires **Owner** or **Admin** tenant role to manage webhooks
-- Gated by the `webhooks` feature
+- Requires tenant **Owner** or **CasePack Admin** permissions to manage webhooks
+- Availability depends on your plan
 
-> Webhook management requires the `webhooks` feature gate. If your plan doesn't include it, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
+> If your plan doesn't include webhook management, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
 
 ## Supported Providers
 

@@ -68,7 +68,6 @@ export default defineConfig({
             { label: 'Audit Log', slug: 'audit-log' },
             { label: 'Users & Roles', slug: 'users-roles' },
             { label: 'Tenant Management', slug: 'admin-tenants' },
-            { label: 'Platform Customers', slug: 'admin-customers' },
           ],
         },
         {

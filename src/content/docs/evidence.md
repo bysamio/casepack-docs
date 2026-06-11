@@ -14,7 +14,7 @@ Two methods:
 
 Keyboard shortcut: **Ctrl+U** / **Cmd+U** from the incident detail page.
 
-> Evidence upload is controlled by the `evidenceVault` feature gate. If your plan doesn't include it, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
+> If your plan doesn't include Evidence Vault, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
 
 ### Supported Files
 
@@ -62,7 +62,7 @@ Click the delete (trash) icon to remove an evidence item:
 Evidence files are stored in an S3-compatible object store:
 
 - **Path pattern**: `tenants/{tenantId}/incidents/{incidentId}/evidence/{evidenceId}/{filename}`
-- **Supported backends**: SeaweedFS (self-hosted default), MinIO, AWS S3
+- **Supported backends**: SeaweedFS (self-hosted default), Ceph RGW, AWS S3, or another S3-compatible backend
 - Pre-signed URLs are used for secure downloads
 
 ## Empty State

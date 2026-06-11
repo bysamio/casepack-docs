@@ -1,65 +1,83 @@
 ---
 title: "Admin: Tenants"
-description: Platform-level tenant management for CasePack Admins and Super Admins.
+description: Account-level tenant workspace management for CasePack Admins.
 ---
 
-The Tenants page lets CasePack Admins and Super Admins manage all tenants on the platform — create new workspaces, assign customers, and manage tenant settings.
+The Tenants page lets CasePack Admins create and maintain isolated tenant workspaces. Each tenant has its own incidents, evidence, reports, timeline events, webhooks, audit log, and user memberships.
 
 ## Overview
 
-- Accessible to **CasePack Admin** and **Super Admin** account roles only
-- Found in the **Tenants** sidebar item (under Administration)
-- Each tenant is an isolated workspace with its own incidents, evidence, users, and webhooks
+- Accessible to **CasePack Admin** users
+- Found in the **Tenants** sidebar item under Administration
+- Tenant creation is limited by the active plan
+- Each tenant is a separate operational workspace for incident response
 
 ## Tenant List
 
-The tenant list shows all tenants on the platform:
+The tenant list shows tenants available to the admin:
 
 | Column | Description |
 |--------|-------------|
-| **Name** | Tenant display name |
-| **Customer** | Assigned customer (if any) |
-| **Users** | Number of users in the tenant |
+| **Tenant** | Tenant display name |
+| **Tenant ID** | Copyable tenant identifier |
 | **Created** | When the tenant was created |
+
+You can search tenants by name or ID.
+
+### Tenant Limit Enforcement
+
+The page displays the current tenant count against the plan limit, for example `3 / 10 tenants`.
+
+When the tenant limit is reached:
+
+- A warning banner is shown
+- The **Create Tenant** button is disabled
+- Existing tenants remain accessible
 
 ## Creating a Tenant
 
 1. Navigate to **Tenants**
-2. Click **"Create Tenant"**
-3. Fill in:
-   - **Name** — Display name for the tenant
-   - **Customer** — (Optional) Assign to a customer
-4. Click **"Create"**
+2. Click **Create Tenant**
+3. Enter a tenant **Name**
+4. Click **Create Tenant**
 
-> Tenant creation is subject to your license limits. If you've reached the maximum tenant count, you'll see a limit warning. See [Licensing & Access States](/licensing-access/).
+The new tenant starts empty. You can then switch into it and create incidents, evidence, webhooks, and users as needed.
 
-## Tenant Settings
+## Tenant Detail
 
-Click a tenant to view its details:
+Click a tenant row to view:
 
-- **Rename** — Edit the tenant display name
-- **Customer assignment** — Link or unlink a customer
-- **User list** — View and manage users in this tenant
-- **Delete** — Permanently remove the tenant and all its data
+| Field | Description |
+|-------|-------------|
+| **Name** | Editable display name |
+| **Tenant ID** | Copyable unique identifier |
+| **S3 Bucket** | Tenant bucket name, or "Shared bucket (default)" |
+| **Created** | Creation timestamp |
 
-> **Caution:** Deleting a tenant is permanent. All incidents, evidence, and audit logs in that tenant are removed.
+The tenant detail page supports renaming tenants and copying tenant identifiers.
 
-## Customer Assignment
+## Switching Tenants
 
-Tenants can be linked to a [Customer](/admin-customers/):
-- One customer can have multiple tenants
-- Customer association helps organize tenants for MSP workflows
-- Customer billing metadata is managed on the Customers page
+The tenant switcher is available to any user who has access to more than one tenant.
+
+1. Open the tenant switcher in the app header
+2. Select the tenant workspace
+3. Tenant-scoped data refreshes for the selected tenant
+
+Users see only tenants assigned to them, while CasePack Admins can manage tenant workspaces for their account.
+
+## First-Time Setup
+
+When a CasePack Admin signs in and no tenant exists yet, the app redirects to **Create First Tenant**. After the first tenant is created, the user lands on the Dashboard.
 
 ## Tips & Best Practices
 
-- Use a naming convention for tenants (e.g., `{customer}-{environment}`)
-- Assign customers to tenants for easier organization and filtering
-- Review tenant user lists periodically
-- Monitor tenant counts against your license limit
+- Name tenants after the workspace or client environment they represent
+- Create separate tenants for distinct data boundaries
+- Monitor tenant count against the plan limit before onboarding new workspaces
+- Assign users from **Account Users** when they need tenant access
 
 ## Related Features
 
-- [Users & Roles](/users-roles/) — Managing users within tenants
-- [Admin: Customers](/admin-customers/) — Customer management
-- [Licensing & Access States](/licensing-access/) — Tenant count limits
+- [Users & Roles](/users-roles/) — Account users and tenant memberships
+- [Licensing & Access States](/licensing-access/) — Tenant limits and restricted states

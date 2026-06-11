@@ -1,129 +1,167 @@
 ---
 title: Self-Hosting
-description: Deploy CasePack on your own infrastructure with Docker or Kubernetes.
+description: Deploy CasePack on your own infrastructure with Docker Compose or Kubernetes.
 ---
 
-CasePack is designed to be self-hosted. Your data stays on your infrastructure — incidents, evidence, and audit logs never leave your network. CasePack supports Docker Compose for simple deployments and Kubernetes (Helm) for production.
+CasePack can run on your own infrastructure with Docker Compose or Kubernetes. Incidents, evidence, audit logs, exports, and identity stay under your operational control.
 
-## Architecture
-
-CasePack consists of:
+## Deployment Stack
 
 | Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **SPA** | React + nginx | Web interface |
+|-----------|------------|---------|
+| **Web App** | React + nginx | Web interface |
 | **API** | Java / Spring Boot | Backend REST API |
-| **Database** | PostgreSQL 16 | Incident data, audit logs |
-| **Object Store** | S3-compatible (SeaweedFS, MinIO, AWS S3) | Evidence file storage |
-| **Identity** | Keycloak | SSO / OIDC authentication |
+| **Database** | PostgreSQL 17 | Incident metadata, users, audit logs, exports |
+| **Object Store** | S3-compatible storage | Evidence files and export artifacts |
+| **Identity** | Keycloak or compatible OIDC IdP | SSO / authentication |
 
-## Docker Compose (Quick Start)
+## Prerequisites
+
+- TLS and DNS for the public app URL
+- PostgreSQL, bundled or external
+- S3-compatible object storage
+- OIDC identity provider, Keycloak recommended
+- A valid CasePack self-host license token
+
+Typical sizing:
+
+| Profile | Suggested Resources |
+|---------|---------------------|
+| **Small deployment** | 2 vCPU, 4-8 GB RAM, 50 GB storage |
+| **Production MSP deployment** | 4-8 vCPU, 16-32 GB RAM, 200 GB+ storage |
+
+## Docker Compose Quick Start
 
 ```bash
-# Clone the deployment repo
-git clone https://github.com/bysamio/casepack-deploy
+# Clone the repo
+git clone https://github.com/casepack/self-host
+cd self-host
 
-# Copy and edit environment file
+# Configure environment
 cp .env.example .env
-# Edit .env with your configuration
+# Edit .env with your settings
 
 # Start all services
 docker compose up -d
 ```
 
-Required environment variables:
-- `CASEPACK_DB_PASSWORD` — PostgreSQL password
-- `KEYCLOAK_ADMIN_PASSWORD` — Keycloak admin password
-- `CASEPACK_LICENSE_KEY` — Your license key (provided on sign-up)
+Core environment values include:
+
+| Variable | Purpose |
+|----------|---------|
+| `CASEPACK_LICENSE_TOKEN` | License token used by the API |
+| `DB_URL` / `DB_USER` / `DB_PASS` | PostgreSQL connection |
+| `OIDC_ISSUER_URI` | OIDC issuer URL |
+| `S3_ENDPOINT` | S3-compatible storage endpoint |
+| `S3_ACCESS_KEY` / `S3_SECRET_KEY` | Object storage credentials |
+| `S3_BUCKET` | Evidence/export bucket |
 
 ## Kubernetes / Helm
 
 ```bash
-# Add the Helm repository
-helm repo add casepack oci://ghcr.io/bysamio/charts
+helm repo add casepack https://charts.casepack.app
+helm repo update
 
-# Install with custom values
-helm install casepack casepack/casepack-spa \
+helm upgrade --install casepack casepack/casepack \
   --namespace casepack \
   --create-namespace \
-  -f values.yaml
+  --values values.yaml
 ```
 
-See the Helm Architecture docs for full configuration options.
+Minimal values example:
 
-## Storage Configuration
+```yaml
+ingress:
+  enabled: true
+  host: casepack.example.com
+  tlsSecretName: casepack-tls
 
-Evidence files are stored in an S3-compatible object store:
+oidc:
+  issuerUrl: https://sso.example.com/realms/casepack
+  clientId: casepack-web
 
-- **SeaweedFS** — Lightweight, self-hosted (recommended for simple deployments)
-- **MinIO** — S3-compatible, self-hosted
-- **AWS S3** — Cloud-managed (for SaaS or hybrid deployments)
+storage:
+  endpoint: https://s3.example.com
+  bucket: casepack-evidence
 
-See the Storage Backends docs for configuration details.
+database:
+  url: jdbc:postgresql://postgres:5432/casepack
+  username: casepack
+  password: ${POSTGRES_PASSWORD}
+```
+
+## Storage Backends
+
+CasePack stores evidence files and export artifacts in S3-compatible object storage.
+
+| Backend | Recommended Use |
+|---------|-----------------|
+| **SeaweedFS** | Default open-source self-host option and local/evaluation backend |
+| **Ceph RGW** | Enterprise Kubernetes environments, often via Rook-Ceph |
+| **AWS S3** | Hosted, hybrid, or cloud-managed object storage |
+
+SeaweedFS and Ceph RGW normally use path-style S3 access. AWS S3 normally uses virtual-hosted-style access.
 
 ## Self-Host Access Page
 
-Self-hosted instances display a dedicated **Access Page** instead of the SaaS landing page:
+Self-hosted deployments show a dedicated access page instead of the hosted marketing landing page.
 
-- Instance metadata (deployment mode, version)
-- Single **"Sign in"** button redirecting to Keycloak
-- Access state banner showing subscription status
+The access page includes:
 
-The access page is shown when `DEPLOYMENT_MODE=self_host` is set in runtime config.
+- Instance metadata such as deployment mode and version
+- A single **Sign in** action that redirects to the configured OIDC provider
+- Access-state banner when the instance is in a restricted subscription state
+
+## Configuration Checklist
+
+Before going live, confirm these values are configured for the web app and API:
+
+| Setting | Purpose |
+|---------|---------|
+| App URL | Public HTTPS URL users will open |
+| API URL | Backend API endpoint used by the web app |
+| Identity issuer | OIDC issuer or Keycloak realm URL |
+| Web client ID | OIDC client used by the web app |
+| Object storage | Endpoint, bucket, access key, and secret for evidence/export storage |
+| Licensing portal | Renewal or license-management URL shown when access is restricted |
+| Documentation URL | Help link shown from the application |
 
 ## Licensing
 
-Self-hosted instances require a license key. License tiers:
+Self-host deployments use the **Self-Host Standard** plan by default:
 
-| Tier | Price | Description |
-|------|-------|-------------|
-| **Founding Pilot** | €149/mo or €1,490/yr | Up to 10 users, 1 tenant |
-| **MSP Pro** | €249/mo or €2,490/yr | Up to 25 users, 5 tenants, all features |
-| **Self-Host Standard** | €6,000/yr (annual only) | Unlimited users, unlimited tenants |
-| **Partner / Enterprise** | Custom pricing | Custom integrations, SLA guarantees |
+- €6,000/year
+- 1 production + 1 staging instance
+- 25 tenant workspaces
+- 50 users
+- Self-host deployment rights
+- Keycloak / SSO support
+- S3-compatible object storage support
 
-See [Pricing Plans](/pricing-plans/) for full feature comparison.
+See [Pricing Plans](/pricing-plans/) for the full plan comparison.
 
-The license key is validated by the API on startup. The SPA shows a **"Self-Hosted"** badge in the header.
+## Restricted States
 
-## Access State Management
+If a self-host license enters a restricted state, the app shows banners and disables affected write paths.
 
-Self-hosted instances display banners based on subscription status:
+- **Grace** — Full access with a renewal warning
+- **Read-Only Expired** — Data remains visible, writes are blocked
+- **Export Only** — Existing exports/evidence can be downloaded from the Export Data page
+- **Suspended** / **Terminated** — Access is blocked or severely restricted
 
-| State | Banner |
-|-------|--------|
-| **Active** | No banner |
-| **Grace** | Warning: subscription expired, grace period active |
-| **Read-Only Expired** | Error: subscription expired, data is read-only |
-| **Export Only** | Warning: only data export is available |
-| **Suspended** | Error: account suspended, contact support |
-| **Terminated** | Error: account terminated |
-
-See [Licensing & Access States](/licensing-access/) for details.
-
-## Export Data Page
-
-When in **Export Only** state, a dedicated Export Data page is available:
-- Allows downloading existing evidence packs
-- No new incidents or evidence can be created
-- Banner explains the restricted state and how to restore access
-
-## Runtime Configuration
-
-The SPA reads runtime configuration from `/config.js` at startup:
-
-| Variable | Description |
-|----------|-------------|
-| `DEPLOYMENT_MODE` | `saas` or `self_host` |
-| `APP_VERSION` | Application version string |
-| `OIDC_AUTHORITY` | Keycloak realm URL |
-| `OIDC_CLIENT_ID` | Keycloak client ID |
-| `API_BASE_URL` | Backend API URL |
+See [Licensing & Access States](/licensing-access/) for the full behavior.
 
 ## Tips & Best Practices
 
-- Always use HTTPS in production (configure in nginx/ingress)
-- Back up PostgreSQL regularly — it contains all incident data
-- Evidence files in S3 should have bucket versioning enabled
-- Rotate Keycloak admin credentials after initial setup
-- Monitor disk space for the object store
+- Use HTTPS in production through ingress or a reverse proxy
+- Back up PostgreSQL regularly
+- Back up or version your object storage bucket
+- Rotate identity-provider admin and service-account credentials
+- Monitor object-store capacity and export growth
+- Keep staging and production instances on separate databases and buckets
+
+## Related Features
+
+- [Licensing & Access States](/licensing-access/) — Access states and plan-based availability
+- [Pricing Plans](/pricing-plans/) — Self-host commercial plan
+- [Evidence](/evidence/) — Evidence storage behavior

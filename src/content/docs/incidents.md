@@ -62,7 +62,7 @@ Click any incident to view its detail page with editable fields and tabbed secti
 | **NIS2 Milestones** | `nis2Timeline` | NIS2 reporting milestones (opt-in) |
 | **Reports** | `incidentReports` | Generate structured reports from templates |
 | **Exports** | `evidencePackExport` | Generate and download evidence packs |
-| **Timeline** | _none_ | Chronological event feed with CRUD (always available) |
+| **Timeline** | `incidentTimeline` | Chronological event feed with CRUD |
 
 Each tab shows a badge with the item count. The Milestones tab shows an overdue count badge in red when applicable.
 
@@ -102,4 +102,5 @@ All four statuses are available from the status dropdown — transitions are not
 - [Evidence](/evidence/) — Uploading and managing artifacts
 - [Milestones](/milestones/) — Deadline tracking
 - [Incident Reports](/incident-reports/) — Generating structured reports from templates
+- [Incident Timeline](/incident-timeline/) — Building the response record
 - [Evidence Pack Export](/evidence-pack-export/)

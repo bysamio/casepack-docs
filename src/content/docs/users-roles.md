@@ -1,94 +1,118 @@
 ---
 title: Users & Roles
-description: Two-tier role system with tenant-level and account-level roles.
+description: Account users, tenant memberships, and role-based access in CasePack.
 ---
 
-CasePack uses a two-tier role system: **tenant roles** (within a single tenant) and **account roles** (platform-wide). Together, they control what users can see and do.
-
-## Tenant Roles
-
-Tenant roles control what a user can do within a specific tenant. Users can have different roles in different tenants.
-
-| Role | Description |
-|------|-------------|
-| **Owner** | Full access. Manage users, webhooks, audit log. One per tenant. |
-| **Admin** | Full access except transferring ownership. Manage webhooks, audit log. |
-| **Analyst** | Create incidents, upload evidence, complete milestones. No admin access. |
-| **Viewer** | Read-only. Can view incidents and evidence but not modify anything. |
-
-### Role Capabilities
-
-| Action | Owner | Admin | Analyst | Viewer |
-|--------|-------|-------|---------|--------|
-| View incidents | ✓ | ✓ | ✓ | ✓ |
-| Create incidents | ✓ | ✓ | ✓ | — |
-| Edit incidents | ✓ | ✓ | ✓ | — |
-| Upload evidence | ✓ | ✓ | ✓ | — |
-| Delete evidence | ✓ | ✓ | ✓ | — |
-| Complete milestones | ✓ | ✓ | ✓ | — |
-| Request exports | ✓ | ✓ | ✓ | — |
-| Manage webhooks | ✓ | ✓ | — | — |
-| View audit log | ✓ | ✓ | — | — |
-| Manage tenant users | ✓ | ✓ | — | — |
-| Transfer ownership | ✓ | — | — | — |
+CasePack uses account roles and tenant memberships together. Account roles decide what a person can administer across the account; tenant memberships decide what they can do inside a specific tenant workspace.
 
 ## Account Roles
 
-Account roles control platform-wide capabilities and are assigned by a CasePack administrator.
+Account roles are managed from **Account Users** by CasePack Admins.
 
 | Role | Description |
 |------|-------------|
-| **Super Admin** | Full platform access. Manage all tenants, users, customers, and license config. |
-| **CasePack Admin** | Manage tenants and account users. Cannot manage customers or license config. |
-| **User** | Standard user. Access only to tenants where assigned a tenant role. |
+| **CasePack Admin** | Account administrator. Can create tenants and manage account users. Admins are attached as Owner to tenant workspaces. |
+| **User** | Standard user. Can access only tenants explicitly assigned to them. |
 
 ### Account Role Capabilities
 
-| Action | Super Admin | CasePack Admin | User |
-|--------|-------------|----------------|------|
-| View all tenants | ✓ | ✓ | — |
-| Create tenants | ✓ | ✓ | — |
-| Delete tenants | ✓ | ✓ | — |
-| Manage account users | ✓ | ✓ | — |
-| Manage customers | ✓ | — | — |
-| View license info | ✓ | — | — |
-| Access assigned tenants | ✓ | ✓ | ✓ |
+| Action | CasePack Admin | User |
+|--------|----------------|------|
+| Access assigned tenants | ✓ | ✓ |
+| Create tenants | ✓ | — |
+| View tenant admin list | ✓ | — |
+| Manage account users | ✓ | — |
 
-## User Management (Tenant Level)
+## Tenant Roles
 
-Owners and Admins can manage users within a tenant:
+Tenant roles control access within a single tenant. A user can have different tenant roles across different tenant workspaces.
 
-1. Open the **Users** section (visible to Owner/Admin)
-2. **Invite** — Add a user by email with a selected role
-3. **Change role** — Update a user's tenant role
-4. **Remove** — Remove a user from the tenant
+| Role | Description |
+|------|-------------|
+| **OWNER** | Full tenant control. Can manage users, roles, and tenant data. |
+| **MEMBER** | Read/write access for day-to-day incident response work. |
+| **VIEWER** | Read-only access to tenant data. |
 
-> Removing a user from a tenant does not delete their account — it only revokes their access to that tenant.
+### Tenant Role Capabilities
 
-## User Management (Account Level)
+| Action | OWNER | MEMBER | VIEWER |
+|--------|-------|--------|--------|
+| View incidents and evidence | ✓ | ✓ | ✓ |
+| Create and edit incidents | ✓ | ✓ | — |
+| Upload and delete evidence | ✓ | ✓ | — |
+| Add and edit timeline events | ✓ | ✓ | — |
+| Complete milestones | ✓ | ✓ | — |
+| Request exports and reports | ✓ | ✓ | — |
+| Manage webhooks | ✓ | — | — |
+| View audit log | ✓ | — | — |
+| Change tenant roles | ✓ | — | — |
 
-CasePack Admins and Super Admins can manage users at the platform level:
+CasePack Admins can manage users for the account even when they are not acting as the Owner of a specific tenant.
 
-1. Navigate to **Account Users** (sidebar, visible to CasePack Admin+)
-2. View all users in the platform with their account role
-3. Change account roles or remove users
+## Team Members Page
+
+Navigate to **Users** to view users in the current tenant.
+
+The page shows:
+
+- User display name and email
+- Tenant membership role
+- Disabled status when applicable
+- Active user count against the license limit
+- A **Show disabled users** toggle
+
+### Changing Tenant Roles
+
+Users with permission can change non-owner tenant users between **MEMBER** and **VIEWER** from the role dropdown.
+
+Current restrictions:
+
+- Owner rows are not demoted from this page
+- Disabled users cannot have their tenant role changed
+- Creating users happens from **Account Users**, not from the tenant Users page
+
+## Account Users Page
+
+CasePack Admins use **Account Users** to create and manage users across all tenants in the account.
+
+### Creating a User
+
+1. Navigate to **Account Users**
+2. Click **Create User**
+3. Enter:
+   - **Email**
+   - **First name** and **Last name** (optional)
+   - **Account role** — User or Admin
+4. For standard Users, select at least one tenant
+5. Choose the membership role for the selected tenants: **OWNER**, **MEMBER**, or **VIEWER**
+6. Click **Create User**
+
+New users receive a login/action email from the identity provider. CasePack does not show or manage temporary passwords in the app.
+
+### Managing Existing Account Users
+
+From Account Users you can:
+
+- Search users by email or name
+- Show or hide disabled users
+- Change account role
+- Disable a user
+- Re-enable a disabled user
+
+Admins are attached as Owner to tenant workspaces. Standard Users only see tenant workspaces assigned to them.
 
 ## Tenant Switching
 
-Users with access to multiple tenants see a **tenant switcher** in the sidebar:
-- Displays the current tenant name
-- Click to switch between tenants
-- Each tenant has independent incidents, evidence, and configurations
+Users with access to multiple tenants see a tenant switcher in the app header. Switching tenants refreshes tenant-scoped pages such as Dashboard, Incidents, Evidence, Webhooks, Audit Log, and Users.
 
 ## Tips & Best Practices
 
-- Use the **Analyst** role for most team members — it covers day-to-day incident response
-- Reserve **Admin** for team leads who need webhook and audit log access
-- **Viewer** is ideal for stakeholders who need visibility without write access
-- Review tenant user lists periodically to remove inactive users
+- Use **MEMBER** for most responders who need to create incidents, upload evidence, and generate deliverables
+- Use **VIEWER** for stakeholders who need visibility without write access
+- Reserve **OWNER** for tenant leads who manage webhooks, audit access, and memberships
+- Give **CasePack Admin** only to people who should manage tenants and account users across the account
 
 ## Related Features
 
-- [Audit Log](/audit-log/) — All user management actions are logged
-- [Admin: Tenants](/admin-tenants/) — Platform-level tenant management
-- [Admin: Customers](/admin-customers/) — Customer management (Super Admin)
+- [Admin: Tenants](/admin-tenants/) — Tenant workspace management
+- [Audit Log](/audit-log/) — User and system actions recorded for compliance

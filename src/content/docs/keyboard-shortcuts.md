@@ -19,11 +19,10 @@ Press **Cmd+K** (or **Ctrl+K** on Windows/Linux) to open the command palette:
 | Incidents | All users |
 | New Incident | All users |
 | Overdue Milestones | All users |
-| Webhooks | Owner / Admin only |
-| Audit Log | Owner / Admin only |
+| Webhooks | Owner or CasePack Admin+ |
+| Audit Log | Owner or CasePack Admin+ |
 | Tenants | CasePack Admin+ |
 | Account Users | CasePack Admin+ |
-| Customers | Super Admin only |
 
 ## Global Shortcuts
 

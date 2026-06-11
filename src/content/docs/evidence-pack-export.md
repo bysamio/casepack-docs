@@ -9,13 +9,11 @@ Evidence Pack Export lets you generate a downloadable package of an incident's d
 
 1. Open the incident detail page
 2. Navigate to the **Exports** tab
-3. Click **"Request Export"**
-4. Choose format:
-   - **PDF** — Professionally formatted report with incident details, milestones, and evidence metadata
-   - **ZIP** — All evidence artifacts plus a JSON manifest file
-5. The export is queued and processed in the background
+3. Click **Export PDF** or **Export ZIP**
+4. The export is queued and processed in the background
+5. Download the file when the status is **Completed**
 
-> Evidence Pack Export requires the `evidencePackExport` feature gate. If your plan doesn't include it, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
+> If your plan doesn't include Evidence Pack Export, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
 
 ## Export Formats
 
@@ -43,19 +41,20 @@ The Exports tab shows all previous exports for the incident:
 | Column | Description |
 |--------|-------------|
 | **Format** | PDF or ZIP |
-| **Status** | Queued, Processing, Completed, Failed |
-| **Requested by** | User who initiated the export |
-| **Requested at** | Relative timestamp |
-| **Download** | Download button (available when status = Completed) |
+| **Status** | Pending, Generating, Completed, or Failed |
+| **Export ID** | Truncated export identifier |
+| **Action** | Generating indicator, Download button, or failure message |
 
 ## Export Status
 
 | Status | Description |
 |--------|-------------|
-| **Queued** | Export request received, waiting to be processed |
-| **Processing** | Export is being generated |
+| **Pending** | Export request received, waiting to be processed |
+| **Generating** | Export is being generated |
 | **Completed** | Export is ready for download |
 | **Failed** | Export generation failed (retry by creating a new export) |
+
+CasePack refreshes pending and generating exports automatically until the export completes or fails.
 
 ## Export in Restricted States
 

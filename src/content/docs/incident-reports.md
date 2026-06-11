@@ -5,7 +5,7 @@ description: Generate structured reports from incident data using built-in templ
 
 Incident Reports let you generate professional, structured reports from your incident data, timeline, and evidence. Choose from built-in templates tailored for different audiences — from quick triage summaries to regulatory notifications.
 
-> Incident Reports require the `incidentReports` feature gate. If your plan doesn't include it, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
+> If your plan doesn't include Incident Reports, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
 
 ## Accessing Reports
 
@@ -61,7 +61,7 @@ Each template defines editable sections that let you add or replace content in t
 | Field | Purpose |
 |-------|---------|
 | Executive Summary | Narrative paragraph about the incident |
-| Business & Customer Impact | Impact on operations, data, customers, or revenue |
+| Business & Client Impact | Impact on operations, data, clients, or revenue |
 | Remediation Steps | Completed and planned remediation actions |
 | Recommendations | Strategic recommendations for preventing recurrence |
 
@@ -96,13 +96,15 @@ The Generated Reports table shows all reports created for the incident:
 | Column | Description |
 |--------|-------------|
 | **Template** | Template name with icon |
-| **Status** | Pending, Processing, Completed, or Failed |
+| **Status** | Pending, Generating, Completed, or Failed |
 | **Format** | PDF or HTML |
 | **Actions** | Preview (HTML) and Download buttons |
 
-- **Pending/Processing** reports show a spinner with "Generating…"
+- **Pending/Generating** reports show a spinner with "Generating…"
 - **Completed** reports offer Preview and Download buttons
 - **Failed** reports display an error message
+
+The report generator uses the same export job status values as evidence packs: `PENDING`, `GENERATING`, `COMPLETED`, and `FAILED`.
 
 ## Tips & Best Practices
 

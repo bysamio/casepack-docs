@@ -3,7 +3,7 @@ title: Quick Start Guide
 description: Get up and running with CasePack in under 5 minutes.
 ---
 
-CasePack helps MSPs run consistent incident reporting across customers, collect evidence artifacts, and export client/auditor-ready evidence packs. This guide walks you through your first session.
+CasePack helps MSPs run consistent incident reporting across tenant workspaces, collect evidence artifacts, and export client/auditor-ready evidence packs. This guide walks you through your first session.
 
 ## Prerequisites
 
@@ -66,15 +66,25 @@ Check the **Overdue** sidebar item for deadlines across all incidents.
 
 1. Open the incident detail page
 2. Navigate to the **Exports** tab
-3. Click **"Request Export"**
-4. Choose format: **PDF** (professional report) or **ZIP** (all artifacts + manifest)
-5. The export is generated in the background — download when ready
+3. Click **Export PDF** or **Export ZIP**
+4. The export is generated in the background — download when ready
 
 > Evidence Pack Export is a plan-gated feature. See [Licensing & Access States](/licensing-access/).
+
+## Optional: Build Timeline and Reports
+
+From the incident detail page:
+
+- Use the **Timeline** tab to record key events, containment, eradication, recovery, and notes
+- Use the **Reports** tab to generate Initial Triage, Executive / Client Summary, Final Evidence Pack, or NIS2 Notification reports
+
+Timeline and Reports are plan-gated features. See [Incident Timeline](/incident-timeline/) and [Incident Reports](/incident-reports/) for details.
 
 ## Next Steps
 
 - [Dashboard deep dive](/dashboard/)
 - [Managing incidents](/incidents/)
+- [Incident Timeline](/incident-timeline/)
+- [Incident Reports](/incident-reports/)
 - [Keyboard shortcuts](/keyboard-shortcuts/)
 - [Licensing & Access States](/licensing-access/)

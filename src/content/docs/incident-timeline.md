@@ -5,7 +5,7 @@ description: Build a chronological record of events, actions, and notes during a
 
 The Incident Timeline gives you a chronological event feed for each incident — capturing what happened, when, and by whom. Use it to record containment actions, recovery steps, notes, and key events throughout the incident lifecycle.
 
-> The Timeline tab requires the `incidentReports` feature gate. If your plan doesn't include it, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
+> If your plan doesn't include the Timeline tab, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
 
 ## Accessing the Timeline
 

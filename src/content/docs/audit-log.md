@@ -12,7 +12,7 @@ The Audit Log provides a searchable, read-only timeline of all significant actio
 - Requires **Owner** or **Admin** tenant role to view
 - Gated by the `auditLog` feature
 
-> Audit Log access requires the `auditLog` feature gate. If your plan doesn't include it, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
+> If your plan doesn't include Audit Log access, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
 
 ## Viewing the Audit Log
 
