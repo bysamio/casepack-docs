@@ -2,8 +2,8 @@ apiVersion: v2
 name: casepack-docs
 description: CasePack Docs — Astro Starlight documentation site
 type: application
-version: 0.3.0-dev
-appVersion: "0.3.0-dev"
+version: 0.3.0
+appVersion: "0.3.0"
 home: https://docs.casepack.app
 sources:
   - https://github.com/bysamio/casepack-docs
