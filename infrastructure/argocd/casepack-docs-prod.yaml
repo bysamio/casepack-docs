@@ -4,14 +4,14 @@ metadata:
   name: casepack-docs-prod
   namespace: argocd
 spec:
-  project: default
+  project: server-production
   destination:
-    server: https://kubernetes.default.svc
+    name: server-production
     namespace: casepack-prod
   sources:
     - repoURL: ghcr.io/bysamio/charts
       chart: casepack-docs
-      targetRevision: 0.1.0
+      targetRevision: 0.3.0
       helm:
         releaseName: casepack-docs
         valueFiles:
