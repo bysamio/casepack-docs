@@ -80,17 +80,11 @@ jobs:
       - name: Bump package.json version
         run: npm version ${{ steps.versions.outputs.release_version }} --no-git-tag-version --allow-same-version
 
-      - name: Update Chart.yaml version
-        run: |
-          CHART="infrastructure/helm/charts/casepack-docs/Chart.yaml"
-          sed -i "s/^version:.*/version: ${{ steps.versions.outputs.release_version }}/" "$CHART"
-          sed -i "s/^appVersion:.*/appVersion: \"${{ steps.versions.outputs.release_version }}\"/" "$CHART"
-
       - name: Commit version bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json infrastructure/helm/charts/casepack-docs/Chart.yaml
+          git add package.json package-lock.json
           git diff --cached --quiet || git commit -m "chore: release v${{ steps.versions.outputs.release_version }}"
           git push
 
@@ -116,15 +110,9 @@ jobs:
       - name: Bump main to next dev version
         run: npm version ${{ steps.versions.outputs.next_dev }} --no-git-tag-version --allow-same-version
 
-      - name: Update Chart.yaml to next dev version
-        run: |
-          CHART="infrastructure/helm/charts/casepack-docs/Chart.yaml"
-          sed -i "s/^version:.*/version: ${{ steps.versions.outputs.next_dev }}/" "$CHART"
-          sed -i "s/^appVersion:.*/appVersion: \"${{ steps.versions.outputs.next_dev }}\"/" "$CHART"
-
       - name: Commit next dev bump
         run: |
-          git add package.json package-lock.json infrastructure/helm/charts/casepack-docs/Chart.yaml
+          git add package.json package-lock.json
           git diff --cached --quiet || git commit -m "chore: start ${{ steps.versions.outputs.next_dev }}"
           git push
 

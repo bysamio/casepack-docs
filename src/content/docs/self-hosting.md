@@ -1,167 +1,232 @@
 ---
 title: Self-Hosting
-description: Deploy CasePack on your own infrastructure with Docker Compose or Kubernetes.
+description: Run CasePack on Docker Compose or Kubernetes with your own identity, database, and object storage.
 ---
 
-CasePack can run on your own infrastructure with Docker Compose or Kubernetes. Incidents, evidence, audit logs, exports, and identity stay under your operational control.
+CasePack self-host keeps the application, incident data, evidence files, exports, identity, and audit records under your operational control. You can run the bundled stack for a fast start, or connect CasePack to your existing PostgreSQL, OIDC, and S3-compatible infrastructure.
 
-## Deployment Stack
+## What You Deploy
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Web App** | React + nginx | Web interface |
-| **API** | Java / Spring Boot | Backend REST API |
-| **Database** | PostgreSQL 17 | Incident metadata, users, audit logs, exports |
-| **Object Store** | S3-compatible storage | Evidence files and export artifacts |
-| **Identity** | Keycloak or compatible OIDC IdP | SSO / authentication |
+| Component | Default option | Purpose |
+|-----------|----------------|---------|
+| CasePack web app | CasePack SPA | Browser UI |
+| CasePack API | CasePack API | REST API, license checks, evidence, exports |
+| Database | PostgreSQL 17 | Incidents, tenants, users, audit log, metadata |
+| Identity | Keycloak | OIDC sign-in |
+| Object storage | SeaweedFS S3 gateway | Evidence files and generated exports |
 
 ## Prerequisites
 
-- TLS and DNS for the public app URL
-- PostgreSQL, bundled or external
-- S3-compatible object storage
-- OIDC identity provider, Keycloak recommended
-- A valid CasePack self-host license token
+For Docker Compose:
 
-Typical sizing:
+- Docker Engine 24+ with Docker Compose v2
+- `curl`, `openssl`, and `python3`
+- A valid CasePack self-host activation token
+- Disk space for PostgreSQL and object storage volumes
 
-| Profile | Suggested Resources |
+For Kubernetes:
+
+- Kubernetes 1.28+
+- Helm 3
+- A default StorageClass, or explicit PVC configuration
+- DNS and TLS for production ingress
+- A valid CasePack self-host activation token
+
+Suggested starting resources:
+
+| Profile | Suggested resources |
 |---------|---------------------|
-| **Small deployment** | 2 vCPU, 4-8 GB RAM, 50 GB storage |
-| **Production MSP deployment** | 4-8 vCPU, 16-32 GB RAM, 200 GB+ storage |
+| Evaluation / small team | 2 vCPU, 4-8 GB RAM, 50 GB storage |
+| MSP production | 4-8 vCPU, 16-32 GB RAM, 200 GB+ storage |
 
 ## Docker Compose Quick Start
 
+Clone the self-host wrapper:
+
 ```bash
-# Clone the repo
-git clone https://github.com/casepack/self-host
-cd self-host
-
-# Configure environment
+git clone https://github.com/bysamio/casepack.git
+cd casepack
 cp .env.example .env
-# Edit .env with your settings
+```
 
-# Start all services
+Edit `.env` and set the required passwords:
+
+```bash
+DB_PASS=change-me
+KC_DB_PASS=change-me
+KC_ADMIN_PASS=change-me
+```
+
+Activate the instance:
+
+```bash
+./activate.sh <activation-token>
+```
+
+Start the stack:
+
+```bash
 docker compose up -d
 ```
 
-Core environment values include:
+Open CasePack:
 
-| Variable | Purpose |
-|----------|---------|
-| `CASEPACK_LICENSE_TOKEN` | License token used by the API |
-| `DB_URL` / `DB_USER` / `DB_PASS` | PostgreSQL connection |
-| `OIDC_ISSUER_URI` | OIDC issuer URL |
-| `S3_ENDPOINT` | S3-compatible storage endpoint |
-| `S3_ACCESS_KEY` / `S3_SECRET_KEY` | Object storage credentials |
-| `S3_BUCKET` | Evidence/export bucket |
+| Service | URL |
+|---------|-----|
+| CasePack app | `http://localhost:3000` |
+| API health | `http://localhost:8080/actuator/health` |
+| Keycloak | `http://localhost:8081` |
 
-## Kubernetes / Helm
+Sign in with the bootstrap admin account associated with your license. After first sign-in, create additional users from CasePack administration.
 
-```bash
-helm repo add casepack https://charts.casepack.app
-helm repo update
+## Object Storage And Browser Uploads
 
-helm upgrade --install casepack casepack/casepack \
-  --namespace casepack \
-  --create-namespace \
-  --values values.yaml
-```
+CasePack uploads evidence directly from the browser to S3-compatible storage using presigned URLs.
 
-Minimal values example:
-
-```yaml
-ingress:
-  enabled: true
-  host: casepack.example.com
-  tlsSecretName: casepack-tls
-
-oidc:
-  issuerUrl: https://sso.example.com/realms/casepack
-  clientId: casepack-web
-
-storage:
-  endpoint: https://s3.example.com
-  bucket: casepack-evidence
-
-database:
-  url: jdbc:postgresql://postgres:5432/casepack
-  username: casepack
-  password: ${POSTGRES_PASSWORD}
-```
-
-## Storage Backends
-
-CasePack stores evidence files and export artifacts in S3-compatible object storage.
-
-| Backend | Recommended Use |
-|---------|-----------------|
-| **SeaweedFS** | Default open-source self-host option and local/evaluation backend |
-| **Ceph RGW** | Enterprise Kubernetes environments, often via Rook-Ceph |
-| **AWS S3** | Hosted, hybrid, or cloud-managed object storage |
-
-SeaweedFS and Ceph RGW normally use path-style S3 access. AWS S3 normally uses virtual-hosted-style access.
-
-## Self-Host Access Page
-
-Self-hosted deployments show a dedicated access page instead of the hosted marketing landing page.
-
-The access page includes:
-
-- Instance metadata such as deployment mode and version
-- A single **Sign in** action that redirects to the configured OIDC provider
-- Access-state banner when the instance is in a restricted subscription state
-
-## Configuration Checklist
-
-Before going live, confirm these values are configured for the web app and API:
+Use these two settings when the API and browser reach storage through different routes:
 
 | Setting | Purpose |
 |---------|---------|
-| App URL | Public HTTPS URL users will open |
-| API URL | Backend API endpoint used by the web app |
-| Identity issuer | OIDC issuer or Keycloak realm URL |
-| Web client ID | OIDC client used by the web app |
-| Object storage | Endpoint, bucket, access key, and secret for evidence/export storage |
-| Licensing portal | Renewal or license-management URL shown when access is restricted |
-| Documentation URL | Help link shown from the application |
+| `S3_ENDPOINT` | Internal endpoint the API uses to talk to object storage |
+| `S3_PUBLIC_ENDPOINT` | Browser-facing endpoint used in presigned upload/download URLs |
 
-## Licensing
+For local Docker, the self-host wrapper defaults to:
 
-Self-host deployments use the **Self-Host Standard** plan by default:
+```bash
+S3_ENDPOINT=http://seaweedfs:8333
+S3_PUBLIC_ENDPOINT=http://casepack-s3.localhost:8333
+```
 
-- €6,000/year
-- 1 production + 1 staging instance
-- 25 tenant workspaces
-- 50 users
-- Self-host deployment rights
-- Keycloak / SSO support
-- S3-compatible object storage support
+For production, publish your S3-compatible gateway through DNS and TLS:
 
-See [Pricing Plans](/pricing-plans/) for the full plan comparison.
+```bash
+S3_ENDPOINT=http://object-store.internal:8333
+S3_PUBLIC_ENDPOINT=https://s3.casepack.example.com
+```
 
-## Restricted States
+If the same endpoint is reachable by both the API and users' browsers, `S3_PUBLIC_ENDPOINT` can be left blank.
 
-If a self-host license enters a restricted state, the app shows banners and disables affected write paths.
+Your S3 backend must allow browser requests from the CasePack web app origin. Example CORS shape:
 
-- **Grace** — Full access with a renewal warning
-- **Read-Only Expired** — Data remains visible, writes are blocked
-- **Export Only** — Existing exports/evidence can be downloaded from the Export Data page
-- **Suspended** / **Terminated** — Access is blocked or severely restricted
+```json
+[
+  {
+    "AllowedOrigins": ["https://casepack.example.com"],
+    "AllowedMethods": ["GET", "PUT", "POST", "HEAD"],
+    "AllowedHeaders": ["*"],
+    "ExposeHeaders": ["ETag"],
+    "MaxAgeSeconds": 3000
+  }
+]
+```
 
-See [Licensing & Access States](/licensing-access/) for the full behavior.
+## Kubernetes / Helm Quick Start
 
-## Tips & Best Practices
+Add the chart repository:
 
-- Use HTTPS in production through ingress or a reverse proxy
-- Back up PostgreSQL regularly
-- Back up or version your object storage bucket
-- Rotate identity-provider admin and service-account credentials
-- Monitor object-store capacity and export growth
-- Keep staging and production instances on separate databases and buckets
+```bash
+helm repo add bysamio https://bysamio.github.io/charts/
+helm repo update
+```
+
+Run activation on an operator workstation:
+
+```bash
+cp .env.example .env
+./activate.sh <activation-token>
+```
+
+Create a Kubernetes Secret for the API settings and license values. Keep generated env files and manifests containing real values outside source control.
+
+Install the chart:
+
+```bash
+helm upgrade --install casepack bysamio/casepack \
+  --namespace casepack \
+  --create-namespace \
+  -f values.yaml \
+  --wait --wait-for-jobs
+```
+
+For local access to a test cluster:
+
+```bash
+kubectl port-forward svc/casepack-casepack-api 8080:80 -n casepack
+kubectl port-forward svc/casepack-casepack-spa 3000:80 -n casepack
+kubectl port-forward svc/casepack-keycloak 8081:80 -n casepack
+```
+
+Production deployments should use DNS and TLS for the app, API, identity provider, and S3 endpoint:
+
+| Public hostname | Purpose |
+|-----------------|---------|
+| `casepack.example.com` | CasePack app |
+| `api.casepack.example.com` | CasePack API |
+| `auth.casepack.example.com` | Keycloak / OIDC |
+| `s3.casepack.example.com` | Browser-facing S3 endpoint |
+
+## License Renewal
+
+Renew your subscription in the licensing portal, then refresh the local license.
+
+For Docker:
+
+```bash
+./renew-license.sh
+```
+
+For Kubernetes:
+
+```bash
+./renew-license.sh --no-restart
+```
+
+Update the Kubernetes Secret with the refreshed license value, then restart the API deployment:
+
+```bash
+kubectl rollout restart deployment/casepack-casepack-api -n casepack
+kubectl rollout status deployment/casepack-casepack-api -n casepack
+```
+
+For air-gapped environments, download a renewed license file from the portal and install it using the self-host wrapper's manual renewal command.
+
+## Smoke Test Checklist
+
+After installation:
+
+1. Open the CasePack app and sign in as the bootstrap admin.
+2. Confirm `/actuator/health` returns `UP`.
+3. Create or open the first tenant workspace.
+4. Create an incident.
+5. Upload a small evidence file.
+6. Generate an evidence pack export.
+7. Download the export.
+
+If this flow works, the license, identity, API, database, object storage, and web app runtime config are wired correctly.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| API does not start | Missing license files, wrong installation values, or database connectivity | Re-run activation and inspect API logs |
+| Login redirects with `invalid_scope` | OIDC client scopes are incomplete | Confirm the OIDC client allows `openid`, `profile`, and `email` |
+| Login spinner after callback | App URL, API CORS, OIDC issuer, or redirect URI mismatch | Align the public URLs across app, API, and identity provider |
+| Signed-in user gets `403` | The user exists in OIDC but not in CasePack | Add the user through CasePack administration |
+| Evidence upload fails in browser | Presigned URL points at a hostname the browser cannot reach | Set `S3_PUBLIC_ENDPOINT` to a browser-reachable HTTPS endpoint |
+| Exports stay pending | API cannot write to object storage or lacks resources | Check S3 credentials, bucket access, and API logs |
+
+## Operations Checklist
+
+- Store activation tokens, licenses, and passwords in a secret manager.
+- Rotate bootstrap and Keycloak admin passwords after installation.
+- Use HTTPS for app, API, identity, and S3 endpoints in production.
+- Back up PostgreSQL and object storage together.
+- Keep production and staging on separate databases, buckets, identity realms, and installation IDs.
+- Keep CasePack images and charts updated.
 
 ## Related Features
 
 - [Licensing & Access States](/licensing-access/) — Access states and plan-based availability
 - [Pricing Plans](/pricing-plans/) — Self-host commercial plan
 - [Evidence](/evidence/) — Evidence storage behavior
+- [Evidence Pack Export](/evidence-pack-export/) — Exporting evidence packs
