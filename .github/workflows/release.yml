@@ -19,7 +19,6 @@ on:
 
 permissions:
   contents: write
-  packages: write
   actions: write
 
 jobs:
@@ -30,7 +29,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # main is a protected branch (PR + review required). The default
+          # GITHUB_TOKEN authenticates as github-actions[bot], which is NOT
+          # exempt and gets rejected. RELEASE_TOKEN is a fine-grained PAT owned
+          # by bysamio (a repo admin), who IS exempt via enforce_admins:false —
+          # so the direct pushes to main below succeed. actions/checkout also
+          # persists this token for the subsequent `git push` calls.
+          token: ${{ secrets.RELEASE_TOKEN }}
           fetch-depth: 0
 
       - name: Pull latest changes
@@ -77,13 +82,14 @@ jobs:
           echo "Release version: $VERSION"
           echo "Next dev version: $NEXT_DEV"
 
-      - name: Bump package.json version
-        run: npm version ${{ steps.versions.outputs.release_version }} --no-git-tag-version --allow-same-version
-
-      - name: Commit version bump
+      - name: Configure git identity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit release version bump
+        run: |
+          npm version ${{ steps.versions.outputs.release_version }} --no-git-tag-version --allow-same-version
           git add package.json package-lock.json
           git diff --cached --quiet || git commit -m "chore: release v${{ steps.versions.outputs.release_version }}"
           git push
@@ -98,7 +104,12 @@ jobs:
             --title "v${{ steps.versions.outputs.release_version }}" \
             --generate-notes
 
-      - name: Trigger release CI/CD pipeline
+      - name: Trigger release image build
+        # build-publish.yml filters its push trigger by `paths`, which makes
+        # tag-push auto-triggering unreliable (a tag push commonly reports no
+        # changed files and is skipped). Dispatch it explicitly so the release
+        # image always builds. workflow_dispatch via GITHUB_TOKEN IS allowed to
+        # start a new run — unlike push/tag events created by GITHUB_TOKEN.
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -107,18 +118,14 @@ jobs:
             -f version="${{ steps.versions.outputs.release_version }}"
           echo "Triggered release CI/CD pipeline for v${{ steps.versions.outputs.release_version }}"
 
-      - name: Bump main to next dev version
-        run: npm version ${{ steps.versions.outputs.next_dev }} --no-git-tag-version --allow-same-version
-
-      - name: Commit next dev bump
+      - name: Commit next dev version bump
+        # This push to main is authenticated by RELEASE_TOKEN (a PAT), so — unlike
+        # the old GITHUB_TOKEN flow — it DOES auto-trigger build-publish.yml via
+        # its `branches: [main]` + package.json path filter. No explicit dispatch
+        # for the main build is needed; any interim build from the release commit
+        # above is superseded by this one through build-publish's concurrency group.
         run: |
+          npm version ${{ steps.versions.outputs.next_dev }} --no-git-tag-version --allow-same-version
           git add package.json package-lock.json
           git diff --cached --quiet || git commit -m "chore: start ${{ steps.versions.outputs.next_dev }}"
           git push
-
-      - name: Trigger main CI/CD pipeline
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh workflow run build-publish.yml --ref main
-          echo "Triggered main CI/CD pipeline for ${{ steps.versions.outputs.next_dev }}"
