@@ -41,6 +41,23 @@ export default defineConfig({
             href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
           },
         },
+        // Umami analytics — page views are tracked automatically by this script.
+        {
+          tag: 'script',
+          attrs: {
+            src: 'https://analytics.bysam.io/umami',
+            'data-website-id': '9c356a28-59d3-4d99-a173-be3a52a782c0',
+            defer: true,
+          },
+        },
+        // Delegated click tracking for every link/button — see public/umami-click-tracking.js.
+        {
+          tag: 'script',
+          attrs: {
+            src: '/umami-click-tracking.js',
+            defer: true,
+          },
+        },
       ],
       sidebar: [
         { label: 'Quick Start', slug: 'getting-started' },
