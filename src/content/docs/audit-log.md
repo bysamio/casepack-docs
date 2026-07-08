@@ -25,7 +25,7 @@ The Audit Log provides a searchable, read-only timeline of all significant actio
 |--------|-------------|
 | **Timestamp** | When the action occurred |
 | **User** | Who performed the action (email or "system") |
-| **Action** | What was done (e.g., `incident.created`, `evidence.uploaded`) |
+| **Action** | What was done (e.g., `INCIDENT_CREATED`, `EVIDENCE_FINALIZED`) |
 | **Resource** | What was affected (e.g., incident title, evidence filename) |
 
 ### Filtering
@@ -37,15 +37,24 @@ The Audit Log provides a searchable, read-only timeline of all significant actio
 
 | Action | Description |
 |--------|-------------|
-| `incident.created` | New incident created |
-| `incident.updated` | Incident fields changed (title, severity, status, description) |
-| `incident.deleted` | Incident soft-deleted |
-| `evidence.uploaded` | Evidence file uploaded |
-| `evidence.deleted` | Evidence file removed |
-| `milestone.completed` | NIS2 milestone marked as done |
-| `export.requested` | Evidence pack export initiated |
-| `webhook.created` | Webhook configuration added |
-| `webhook.deleted` | Webhook configuration removed |
+| `INCIDENT_CREATED` | New incident created |
+| `INCIDENT_UPDATED` | Incident fields changed (title, severity, status, description) |
+| `INCIDENT_DELETED` | Incident soft-deleted |
+| `EVIDENCE_INIT` | Evidence upload initialized |
+| `EVIDENCE_FINALIZED` | Evidence file uploaded |
+| `EVIDENCE_DOWNLOADED` | Evidence file downloaded |
+| `EVIDENCE_DELETED` | Evidence file removed |
+| `EVIDENCE_PACK_EXPORTED` | Evidence pack generated |
+| `INCIDENT_CREATED_VIA_WEBHOOK` | Webhook delivery created an incident |
+| `WEBHOOK_CREATED` | Webhook endpoint added |
+| `WEBHOOK_DISABLED` | Webhook endpoint disabled |
+| `NIS2_ENABLED` | NIS2 reporting enabled for an incident |
+| `MILESTONE_CREATED` | NIS2 milestone created |
+| `MILESTONE_COMPLETED` | NIS2 milestone marked as done |
+| `TIMELINE_EVENT_CREATED` | Timeline event added |
+| `TIMELINE_EVENT_UPDATED` | Timeline event changed |
+| `TIMELINE_EVENT_DELETED` | Timeline event deleted |
+| `REPORT_GENERATED` | Incident report generated |
 
 ## Audit Log in Evidence Packs
 

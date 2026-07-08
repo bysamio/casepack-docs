@@ -3,7 +3,7 @@ title: Webhooks
 description: Receive incidents from ConnectWise, HaloPSA, Autotask, and custom systems.
 ---
 
-Webhooks allow external PSA tools and ticketing systems to automatically create incidents in CasePack. Each webhook provides a unique URL that accepts POST requests.
+Webhooks allow external PSA tools and ticketing systems to automatically create incidents in CasePack. Each webhook endpoint accepts signed POST requests and maps the incoming payload into an incident.
 
 ## Overview
 
@@ -25,14 +25,14 @@ Webhooks allow external PSA tools and ticketing systems to automatically create 
 ## Creating a Webhook
 
 1. Navigate to **Webhooks** in the sidebar
-2. Click **"New Webhook"**
+2. Click **"Create Webhook"**
 3. Fill in:
    - **Name** — Display name (e.g., "ConnectWise Production")
-   - **Provider** — Select: ConnectWise, HaloPSA, Autotask, or Generic
+   - **Source Type** — Select: Generic, ConnectWise, HaloPSA, or Autotask
 4. Click **"Create"**
-5. Copy the generated webhook URL — this is the endpoint to configure in your PSA tool
+5. Copy the generated secret token immediately
 
-> **Important:** The webhook URL contains a secret token. Treat it like a password.
+> **Important:** The full secret token is shown only once, when the endpoint is created. Store it securely; it is used to sign webhook payloads.
 
 ## Webhook List
 
@@ -40,18 +40,22 @@ The webhook list shows all configured webhooks for the tenant:
 
 | Column | Description |
 |--------|-------------|
-| **Name** | Display name |
-| **Provider** | ConnectWise, HaloPSA, Autotask, or Generic |
-| **URL** | Webhook endpoint (click to copy) |
+| **Name** | Display name and creator |
+| **Source Type** | Generic, ConnectWise, HaloPSA, or Autotask |
+| **Status** | Active or disabled |
+| **Secret Token** | Masked token with click-to-copy action |
 | **Created** | When the webhook was created |
+
+Row actions let Owners and CasePack Admins view deliveries, copy the masked secret token, or disable an active webhook.
 
 ## How It Works
 
-1. Your PSA tool sends a POST request to the webhook URL
-2. The CasePack API receives the payload and identifies the provider
-3. The payload is mapped to incident fields (title, description, severity)
-4. A new incident is created in the webhook's tenant
-5. The incident appears in the incident list
+1. Your PSA tool sends a signed POST request to `/api/webhooks/intake/{endpointId}`
+2. The CasePack API verifies the `X-Webhook-Signature` HMAC header
+3. The endpoint's source type selects the payload mapper
+4. The payload is mapped to incident fields (title, description, severity)
+5. A new incident is created in the webhook's tenant
+6. The incident appears in the incident list and the delivery is recorded
 
 ### Payload Example (Generic)
 
@@ -65,21 +69,24 @@ The webhook list shows all configured webhooks for the tenant:
 
 ## Testing a Webhook
 
-Use `curl` to test a webhook:
+Use `curl` to test a webhook after computing an HMAC-SHA256 signature over the raw JSON body with the endpoint's secret token:
 
 ```bash
-curl -X POST https://your-instance/api/v1/webhooks/{id}/ingest \
+curl -X POST https://your-instance/api/webhooks/intake/{endpointId} \
   -H "Content-Type: application/json" \
+  -H "X-Webhook-Signature: sha256=<hex-hmac>" \
   -d '{"title": "Test incident", "description": "Test description", "severity": "low"}'
 ```
+
+A valid request returns `{"status":"processed","incidentId":"..."}`. Missing or invalid signatures return `401` with `{"status":"failed","error":"Invalid signature"}`.
 
 ## Tips & Best Practices
 
 - Name webhooks descriptively (include the source system and environment)
-- Test with a simple `curl` command before configuring your PSA tool
+- Test with a signed request before configuring your PSA tool
 - Use the Generic provider for custom integrations
 - One webhook per source system per tenant keeps incidents organized
-- Webhook URLs are secret — rotate if compromised by creating a new webhook
+- Webhook secrets are sensitive — rotate if compromised by creating a new webhook and disabling the old one
 
 ## Related Features
 

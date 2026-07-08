@@ -25,8 +25,8 @@ CasePack defines six access states that determine what users can do in the app:
 |-------|-------------|-------------|
 | **Active** | Valid subscription | Full access, no restrictions |
 | **Grace** | Subscription expired, within grace period | Full access with warning banner |
-| **Read-Only Expired** | Grace period ended | All data visible, no write operations allowed |
-| **Export Only** | Limited access for data retrieval | Only evidence pack downloads available |
+| **Read-Only Expired** | Grace period ended | Read pages remain visible; create, update, delete, upload, and generation actions are blocked |
+| **Export Only** | Limited access for data retrieval | Only existing evidence/export downloads and billing remain available |
 | **Suspended** | Account suspended | No access, contact support banner |
 | **Terminated** | Account permanently terminated | No access, account closed banner |
 
@@ -34,9 +34,9 @@ CasePack defines six access states that determine what users can do in the app:
 
 Each non-active state displays a prominent banner so users understand what changed:
 
-- **Grace** — Yellow warning: "Your subscription has expired. You have until {date} to renew before access becomes restricted."
-- **Read-Only Expired** — Red error: "Your subscription has expired. Your data is preserved but read-only."
-- **Export Only** — Yellow warning: "Your account is in export-only mode. Download your data before access ends."
+- **Grace** — Yellow warning that the subscription or license is overdue and full access will become read-only if not renewed.
+- **Read-Only Expired** — Red error that the workspace or instance is in read-only mode and renewal restores full access.
+- **Export Only** — Red error that only existing exports and evidence can be downloaded.
 - **Suspended** — Red error: "Your account has been suspended. Contact support to resolve this issue."
 - **Terminated** — Red error: "Your account has been terminated."
 
@@ -60,16 +60,45 @@ When a feature is not included in your plan, CasePack shows an upgrade prompt in
 
 Restricted access states protect your data while limiting changes:
 
-- Upload buttons are disabled with a tooltip explaining the restriction
-- Create/edit actions are blocked
-- Existing data remains fully visible and downloadable
+- **Read-Only Expired** still allows read access. Users can view incidents, evidence lists, webhook delivery history, milestones, reports, timeline events, and audit logs when their role and plan allow it.
+- Write actions are blocked in read-only mode, including creating incidents, editing incident fields, uploading or deleting evidence, completing milestones, managing webhooks, generating exports or reports, and changing tenant/user settings.
+- Existing evidence files and completed exports remain downloadable in read-only mode.
+- **Export Only** blocks the normal workspace pages and keeps only existing evidence/export downloads and renewal or billing actions available.
+- Suspended and terminated accounts do not allow operational workspace access.
+
+## API Behavior
+
+Authenticated tenant and customer API requests follow the same rules:
+
+- `GET`, `HEAD`, and `OPTIONS` requests are allowed in **Read-Only Expired** when the user's role and plan permit the resource.
+- `POST`, `PUT`, `PATCH`, and `DELETE` requests in **Read-Only Expired** return `403 Forbidden` with `errorCode: "license_read_only"`.
+- **Export Only** allows only existing evidence/export download requests. Other operational requests return `403 Forbidden` with `errorCode: "license_export_only"`.
+
+Restricted license responses include the current state and remaining allowed actions:
+
+```json
+{
+  "status": 403,
+  "error": "Forbidden",
+  "errorCode": "license_read_only",
+  "message": "Your subscription has expired. Data is read-only until you renew.",
+  "state": "READ_ONLY_EXPIRED",
+  "allowedActions": [
+    "read_data",
+    "download_exports",
+    "view_audit_log",
+    "manage_billing"
+  ],
+  "correlationId": "..."
+}
+```
 
 ## Export Data Page
 
 When in **Export Only** state, users are redirected to a dedicated Export Data page:
 
 - Lists all existing evidence pack exports across incidents
-- Download buttons remain functional
+- Download buttons for existing exports and evidence remain functional
 - No new incidents, evidence, or exports can be created
 - Banner explains the restriction and how to restore full access
 
