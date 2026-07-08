@@ -42,11 +42,15 @@ export default defineConfig({
           },
         },
         // Umami analytics — page views are tracked automatically by this script.
+        // The site is built once and deployed to both staging and prod, so the
+        // website id is baked in for both. data-domains scopes tracking to the
+        // prod hostname; the tracker ignores events from staging.docs.casepack.app.
         {
           tag: 'script',
           attrs: {
             src: 'https://analytics.bysam.io/umami',
             'data-website-id': '9c356a28-59d3-4d99-a173-be3a52a782c0',
+            'data-domains': 'docs.casepack.app',
             defer: true,
           },
         },
