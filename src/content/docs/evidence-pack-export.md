@@ -15,6 +15,10 @@ Evidence Pack Export lets you generate a downloadable package of an incident's d
 
 > If your plan doesn't include Evidence Pack Export, you'll see an upgrade prompt. See [Licensing & Access States](/licensing-access/).
 
+:::caution
+Export generation does not scan or sanitize source evidence. A **Completed** status means that CasePack generated the requested file successfully; it is not a malware-safety verdict. Treat ZIP exports and their original artifacts as untrusted, scan them with approved security tooling, and open them only in an appropriate environment.
+:::
+
 ## Export Formats
 
 ### PDF Export
@@ -30,7 +34,7 @@ A compressed archive containing:
 - All evidence files in their original format
 - `manifest.json` — Machine-readable metadata:
   - Incident details
-  - Evidence file listing with hashes
+  - Evidence count
   - Milestone status
   - Export timestamp
 
@@ -67,6 +71,8 @@ See [Licensing & Access States](/licensing-access/).
 
 - Use PDF exports for client-facing reports
 - Use ZIP exports for auditors who need the raw artifacts
+- Warn recipients that ZIP exports contain original, unscanned artifacts
+- Scan the completed archive before extracting it, and use an isolated environment when its contents may be hostile
 - Create exports before closing an incident for a complete package
 - Re-export after adding new evidence to include everything
 - Exports are immutable — each request creates a new snapshot

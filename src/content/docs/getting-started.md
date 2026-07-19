@@ -43,9 +43,11 @@ The Dashboard gives you an at-a-glance overview:
 1. Open the incident detail page
 2. Navigate to the **Evidence** tab
 3. Click **"Upload"** or drag & drop files into the upload area
-4. Supported formats: images, PDFs, logs, text files, archives — any file type
+4. The default policy supports common logs, structured data, email, packet captures, documents, images, archives, and selected forensic artifacts
 
 > Keyboard shortcut: **Ctrl+U** / **Cmd+U** to trigger the file picker from the incident detail page.
+
+> CasePack does not currently scan file contents or quarantine malware. Treat evidence as untrusted and review the [supported-file and malware-safety guidance](/evidence/#supported-files) before uploading or opening artifacts.
 
 ## Step 5: Track Milestones (Optional — NIS2)
 

@@ -120,6 +120,37 @@ Your S3 backend must allow browser requests from the CasePack web app origin. Ex
 ]
 ```
 
+## Current Malware-Scanning Boundary
+
+Integrated malware scanning and quarantine are deliberately outside the current MVP scope. CasePack validates configured MIME types, filename extensions, and file size, but it does not inspect file signatures or run an antivirus or sandbox engine. Successful upload, download, or export does not establish that an artifact is safe.
+
+For the current release:
+
+- Keep evidence storage private and accessible only through CasePack's short-lived presigned URLs.
+- Keep the curated MIME-type and extension allowlists enabled; do not configure unrestricted `*/*` and `*` policies.
+- Limit uploads to authenticated, authorized incident responders.
+- Do not use CasePack as a repository or distribution channel for known live malware.
+- Keep known or suspected hostile samples in an approved isolated analysis platform and record their metadata or hash in the incident workflow.
+- Scan downloaded evidence and ZIP exports with your organization's security tooling before opening, extracting, or forwarding them.
+
+Relevant API settings include:
+
+| Setting | Purpose |
+|---------|---------|
+| `EVIDENCE_MAX_BYTES` | Maximum accepted evidence-object size |
+| `EVIDENCE_ALLOWED_TYPES` | Comma-separated MIME-type allowlist |
+| `EVIDENCE_ALLOWED_EXTENSIONS` | Comma-separated filename-extension allowlist |
+
+Scanning and fail-closed quarantine become pre-launch requirements—not optional later hardening—before a deployment:
+
+- accepts uploads from public, anonymous, or automatically integrated third-party sources
+- permits executables, scripts, active web content, or macro-enabled documents
+- parses, extracts, or previews uploaded content on the server
+- is marketed or contractually represented as malware-safe storage
+- supports workflows for collecting and distributing live malware samples
+
+Until then, the safer MVP is a controlled evidence repository with an explicit trust boundary, not a partially implemented scanner that may create false confidence. See [Evidence](/evidence/) and [Evidence Pack Export](/evidence-pack-export/) for user-facing handling guidance.
+
 ## Kubernetes / Helm Quick Start
 
 Add the chart repository:

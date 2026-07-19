@@ -18,18 +18,29 @@ Keyboard shortcut: **Ctrl+U** / **Cmd+U** from the incident detail page.
 
 ### Supported Files
 
-Any file type can be uploaded. Common examples:
+CasePack uses a configurable allowlist for common incident-evidence formats. The default policy includes:
 
 | Type | Examples |
 |------|----------|
-| Images | `.png`, `.jpg`, `.gif`, `.webp` |
-| Documents | `.pdf`, `.docx`, `.txt`, `.csv` |
-| Logs | `.log`, `.json`, `.xml`, `.evtx` |
-| Archives | `.zip`, `.tar.gz`, `.7z` |
+| Logs and configuration | `.log`, `.txt`, `.md`, `.csv`, `.conf`, `.ini` |
+| Structured data | `.json`, `.jsonl`, `.xml`, `.yaml`, `.toml`, `.ioc`, `.har` |
+| Email and network captures | `.eml`, `.msg`, `.pst`, `.ost`, `.pcap`, `.pcapng`, `.cap` |
+| Documents and images | `.pdf`, `.docx`, `.xlsx`, `.pptx`, `.png`, `.jpg`, `.gif`, `.webp`, `.tiff` |
+| Archives | `.zip`, `.gz`, `.tar`, `.7z`, `.rar` |
+| Selected forensic artifacts | `.evtx`, `.etl`, memory dumps, disk images, and SQLite databases |
+
+Active web content, scripts, macro-enabled Office files, and executables are excluded by the default policy. Self-hosted administrators can configure both MIME-type and filename-extension allowlists, but unrestricted uploads are not recommended.
+
+:::caution
+CasePack does not currently inspect file contents or provide antivirus scanning, sandboxing, or malware quarantine. An accepted upload does **not** mean that a file is safe. CasePack's current release is not intended to be a live-malware repository or malware-analysis environment.
+
+Keep known or suspected hostile samples in an approved isolated analysis system. Scan ordinary incident artifacts with your organization's security tooling before upload and again before opening or sharing a downloaded file.
+:::
 
 ### Upload Behavior
 
-- Files are uploaded individually to the API
+- The API authorizes each upload, then the browser sends the file directly to S3-compatible storage using a short-lived presigned URL
+- The API verifies the stored object's size, content type, and tenant/incident path before registering it as evidence
 - A progress indicator shows during upload
 - On success, the file appears immediately in the evidence list
 - Failed uploads show an error toast with the reason
@@ -50,10 +61,13 @@ Each evidence item shows:
 ### Download
 Click a file's download button to download the original artifact from the object store.
 
+Downloads are delivered as attachments rather than rendered inline. This reduces accidental browser execution but does not replace malware scanning.
+
 ### Delete
 Click the delete (trash) icon to remove an evidence item:
 - A confirmation dialog appears
-- Deletion is **permanent** — the file is removed from the object store
+- The item is removed from the active evidence list
+- The underlying object is retained by the current release for forensic and audit purposes
 
 > Delete is disabled in read-only or export-only subscription states. See [Licensing & Access States](/licensing-access/).
 
@@ -61,9 +75,9 @@ Click the delete (trash) icon to remove an evidence item:
 
 Evidence files are stored in an S3-compatible object store:
 
-- **Path pattern**: `tenants/{tenantId}/incidents/{incidentId}/evidence/{evidenceId}/{filename}`
+- **Object organization**: Generated keys are scoped to the tenant and incident; the original filename is metadata, not an authorization boundary
 - **Supported backends**: SeaweedFS (self-hosted default), Ceph RGW, AWS S3, or another S3-compatible backend
-- Pre-signed URLs are used for secure downloads
+- Short-lived presigned URLs are used for uploads and attachment downloads
 
 ## Empty State
 
@@ -79,6 +93,7 @@ With an **"Upload evidence"** button.
 - Use descriptive filenames before uploading for easier identification
 - Screenshots are especially useful for evidence packs
 - Large files are supported, but keep object store disk capacity in mind
+- Treat every uploaded and downloaded artifact as untrusted until it has been checked by your organization's security tooling
 
 ## Related Features
 
