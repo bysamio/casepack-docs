@@ -17,7 +17,9 @@ CasePack helps MSPs run consistent incident reporting across tenant workspaces, 
 3. Enter your credentials and authorize access
 4. You'll be redirected to the **Dashboard**
 
-> **Self-hosted instances** show a dedicated access page with instance metadata and a single "Sign in" button. See [Self-Hosting](/self-hosting/) for details.
+> **Self-hosted instances** use the private Connected design-partner flow.
+> Enrollment is completed by an operator before customer data is created. See
+> [Self-Hosting](/self-hosting/) for the current support boundary.
 
 ## Step 2: Explore the Dashboard
 

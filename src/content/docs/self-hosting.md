@@ -1,263 +1,215 @@
 ---
 title: Self-Hosting
-description: Run CasePack on Docker Compose or Kubernetes with your own identity, database, and object storage.
+description: Deploy the private CasePack Connected design-partner preview with Docker Compose.
 ---
 
-CasePack self-host keeps the application, incident data, evidence files, exports, identity, and audit records under your operational control. You can run the bundled stack for a fast start, or connect CasePack to your existing PostgreSQL, OIDC, and S3-compatible infrastructure.
+CasePack self-host keeps the application, incident data, evidence, exports,
+identity, and audit records on infrastructure you operate. The current offer is
+a private design-partner preview, not a generally available or air-gapped
+edition.
 
-## What You Deploy
+## Current Support Boundary
 
-| Component | Default option | Purpose |
-|-----------|----------------|---------|
-| CasePack web app | CasePack SPA | Browser UI |
-| CasePack API | CasePack API | REST API, license checks, evidence, exports |
-| Database | PostgreSQL 17 | Incidents, tenants, users, audit log, metadata |
+| Item | Current preview |
+|---|---|
+| Licensing mode | Connected Direct |
+| Deployment profile | Docker Compose or Podman Compose |
+| API replicas | One per deployment |
+| Deployment identities | Two per entitlement |
+| Tenant workspaces | Unlimited |
+| Users | Unlimited |
+| Kubernetes / Helm | Not yet supported for the Connected pilot |
+| Air-gapped and brokered modes | Roadmap candidates; not available |
+
+The two deployment identities are named **primary** and **recovery/test** for
+operator convenience. CasePack does not infer production or non-production
+from an environment name, hostname, database, or workload.
+
+## What You Operate
+
+| Component | Bundled default | Purpose |
+|---|---|---|
+| Web app | CasePack SPA | Browser UI |
+| API | CasePack API | REST API, local credential verification, evidence, exports |
+| Database | PostgreSQL 17 | Customer records and audit metadata |
 | Identity | Keycloak | OIDC sign-in |
-| Object storage | SeaweedFS S3 gateway | Evidence files and generated exports |
+| Object storage | SeaweedFS S3 gateway | Evidence and generated exports |
+| PDF renderer | Gotenberg | Report rendering |
 
 ## Prerequisites
 
-For Docker Compose:
+- Docker Engine 24+ with Docker Compose v2, or a compatible Podman Compose setup
+- A private CasePack design-partner entitlement
+- A short-lived enrollment code for one available deployment slot
+- The pinned CasePack issuer public key supplied during onboarding
+- Outbound HTTPS access from the API container to the single configured
+  CasePack licensing origin
+- Durable, encrypted backups for PostgreSQL, object storage, and the
+  `licensing-state` volume
 
-- Docker Engine 24+ with Docker Compose v2
-- `curl`, `openssl`, and `python3`
-- A valid CasePack self-host activation token
-- Disk space for PostgreSQL and object storage volumes
+## Enrollment Publication Gate
 
-For Kubernetes:
+The Compose/Podman wrapper and enrollment flow are implemented for engineering
+verification, but public operator commands are intentionally withheld until
+the clean-install, upgrade, rollback, restore, and licensing-outage canary
+passes against a signed compatibility set. Design partners receive the pinned,
+reviewed runbook during onboarding.
 
-- Kubernetes 1.28+
-- Helm 3
-- A default StorageClass, or explicit PVC configuration
-- DNS and TLS for production ingress
-- A valid CasePack self-host activation token
+Enrollment uses a short-lived code supplied through a protected prompt or
+owner-readable file. The code must never be passed as a command-line value,
+stored in environment configuration, or committed to source control.
 
-Suggested starting resources:
+The CasePack API image is the sole owner of the durable state stored in the
+`licensing-state` volume:
 
-| Profile | Suggested resources |
-|---------|---------------------|
-| Evaluation / small team | 2 vCPU, 4-8 GB RAM, 50 GB storage |
-| MSP production | 4-8 vCPU, 16-32 GB RAM, 200 GB+ storage |
-
-## Docker Compose Quick Start
-
-Clone the self-host wrapper:
-
-```bash
-git clone https://github.com/bysamio/casepack.git
-cd casepack
-cp .env.example .env
+```text
+/var/lib/casepack/licensing/
+  installation-key.pk8
+  credential.jwt
+  state.json
+  state.lock
 ```
 
-Edit `.env` and set the required passwords:
+The private wrapper invokes the API image's licensing command mode; it does not
+parse or write these files. The first customer, workspace, and CasePack
+administrator are created only after the API has verified the key-bound
+Connected credential.
 
-```bash
-DB_PASS=change-me
-KC_DB_PASS=change-me
-KC_ADMIN_PASS=change-me
-```
+## Credential Refresh
 
-Activate the instance:
+The API attempts a credential refresh approximately every 24 hours with
+per-deployment jitter. The private operator runbook also provides an explicit
+refresh procedure.
 
-```bash
-./activate.sh <activation-token>
-```
+Refresh proves possession of the deployment's non-exported Ed25519 private key,
+strictly verifies the returned credential against the pinned offline issuer
+trust set, rejects sequence rollback, and updates the protected state. It does
+not create a new entitlement or another customer-visible license.
 
-Start the stack:
+CasePack follows redirects neither during enrollment nor refresh, and contacts
+only the configured HTTPS licensing origin.
 
-```bash
-docker compose up -d
-```
+## Privacy Boundary
 
-Open CasePack:
+Connected requests use a fixed field allowlist:
 
-| Service | URL |
-|---------|-----|
-| CasePack app | `http://localhost:3000` |
-| API health | `http://localhost:8080/actuator/health` |
-| Keycloak | `http://localhost:8081` |
+- installation ID and public-key thumbprint
+- entitlement, product, protocol, and deployment-slot identifiers
+- challenge, proof, logical request, and credential-sequence metadata
+- CasePack version and supported deployment profile
 
-Sign in with the bootstrap admin account associated with your license. After first sign-in, create additional users from CasePack administration.
+CasePack does **not** send incident content, evidence, tenant names, user data,
+IdP configuration, storage configuration, credentials, or workflow content to
+the licensing service.
 
-## Object Storage And Browser Uploads
+## Continuity and Residual Risk
 
-CasePack uploads evidence directly from the browser to S3-compatible storage using presigned URLs.
+The current credential permits up to 30 days of offline continuity. This keeps
+the customer-operated service usable during a CasePack licensing outage, but it
+also means server-side revocation and detection of a copied state volume can
+lag until the next successful refresh or credential expiry.
 
-Use these two settings when the API and browser reach storage through different routes:
+Software-only keys cannot reliably distinguish two concurrently running copies
+of the same complete VM/volume backup. The authorized identity-replacement
+workflow creates a successor identity and supersedes the old deployment, but
+the old signed credential may remain usable until it expires. Hardware-backed
+keys or a shorter continuity window may be offered later if design partners
+need a tighter control.
 
-| Setting | Purpose |
-|---------|---------|
-| `S3_ENDPOINT` | Internal endpoint the API uses to talk to object storage |
-| `S3_PUBLIC_ENDPOINT` | Browser-facing endpoint used in presigned upload/download URLs |
+Connected Direct therefore reduces casual copying and provides auditable
+enrollment, refresh, replacement, and revocation; it is not presented as
+tamper-proof DRM.
 
-For local Docker, the self-host wrapper defaults to:
+## Setup and Recovery States
 
-```bash
-S3_ENDPOINT=http://seaweedfs:8333
-S3_PUBLIC_ENDPOINT=http://casepack-s3.localhost:8333
-```
+Licensing failure never causes CasePack to treat a populated customer database
+as a fresh installation:
 
-For production, publish your S3-compatible gateway through DNS and TLS:
+| State | Selection rule | Behavior |
+|---|---|---|
+| `SETUP` | Database is proven empty and no verified credential is available | Customer data creation is blocked; enrollment and diagnostics remain available |
+| `RECOVERY_READ_EXPORT` | Data exists, emptiness is uncertain, or restored licensing state needs reconciliation | Authenticated reads and permitted exports remain available; ordinary writes are paused |
 
-```bash
-S3_ENDPOINT=http://object-store.internal:8333
-S3_PUBLIC_ENDPOINT=https://s3.casepack.example.com
-```
+The recovery write freeze includes PSA webhook intake, licensing provisioning,
+and internal reset actions. This prevents background or externally initiated
+traffic from changing a restored database while its licensing head is being
+reconciled.
 
-If the same endpoint is reachable by both the API and users' browsers, `S3_PUBLIC_ENDPOINT` can be left blank.
+The private operator runbook provides status, diagnostics, and recovery
+procedures using the API image's licensing command mode. Recovery codes are
+read from protected files, never command-line values.
 
-Your S3 backend must allow browser requests from the CasePack web app origin. Example CORS shape:
+Recovery does not silently enroll a new identity. Ordinary API startup never
+creates or replaces an installation.
 
-```json
-[
-  {
-    "AllowedOrigins": ["https://casepack.example.com"],
-    "AllowedMethods": ["GET", "PUT", "POST", "HEAD"],
-    "AllowedHeaders": ["*"],
-    "ExposeHeaders": ["ETag"],
-    "MaxAgeSeconds": 3000
-  }
-]
-```
+## Complete Custody Export
 
-## Current Malware-Scanning Boundary
+In `RECOVERY_READ_EXPORT`, a CasePack customer administrator can create a new
+complete custody export from the recovery banner and download it after the
+background job completes. Ordinary users and administrators from another
+customer cannot create, inspect, or download the archive.
 
-Integrated malware scanning and quarantine are deliberately outside the current MVP scope. CasePack validates configured MIME types, filename extensions, and file size, but it does not inspect file signatures or run an antivirus or sandbox engine. Successful upload, download, or export does not establish that an artifact is safe.
+The ZIP uses the versioned `casepack-custody-export/v1` manifest. It includes
+customer-owned CasePack relational records, audit history, evidence metadata,
+referenced evidence blobs, and generated exports. Each manifest entry carries
+its byte length, media type, stable identifier, and SHA-256 digest. If a
+referenced object is missing or changes size during generation, CasePack fails
+the job instead of publishing an incomplete archive.
 
-For the current release:
+The archive intentionally excludes application licensing material, webhook
+secrets and delivery headers, provisioning/email queues, contact requests,
+external identity-provider data and credentials, and other application
+secrets. PostgreSQL, object storage, Keycloak, and the licensing-state volume
+must still be backed up together for operational disaster recovery; the
+custody archive is a portable customer-data exit path, not a full system
+restore image.
 
-- Keep evidence storage private and accessible only through CasePack's short-lived presigned URLs.
-- Keep the curated MIME-type and extension allowlists enabled; do not configure unrestricted `*/*` and `*` policies.
-- Limit uploads to authenticated, authorized incident responders.
-- Do not use CasePack as a repository or distribution channel for known live malware.
-- Keep known or suspected hostile samples in an approved isolated analysis platform and record their metadata or hash in the incident workflow.
-- Scan downloaded evidence and ZIP exports with your organization's security tooling before opening, extracting, or forwarding them.
+## Backup, Restore, and Redeploy
 
-Relevant API settings include:
+Back up these as one recovery set:
 
-| Setting | Purpose |
-|---------|---------|
-| `EVIDENCE_MAX_BYTES` | Maximum accepted evidence-object size |
-| `EVIDENCE_ALLOWED_TYPES` | Comma-separated MIME-type allowlist |
-| `EVIDENCE_ALLOWED_EXTENSIONS` | Comma-separated filename-extension allowlist |
+- PostgreSQL data
+- S3-compatible evidence and export objects
+- the `licensing-state` named volume
+- the Keycloak database and required configuration
 
-Scanning and fail-closed quarantine become pre-launch requirements—not optional later hardening—before a deployment:
+Preserving the licensing volume across image upgrades and ordinary stack
+restarts keeps the deployment identity stable. Redeploying a new CasePack
+version must not create another installation or visible license.
 
-- accepts uploads from public, anonymous, or automatically integrated third-party sources
-- permits executables, scripts, active web content, or macro-enabled documents
-- parses, extracts, or previews uploaded content on the server
-- is marketed or contractually represented as malware-safe storage
-- supports workflows for collecting and distributing live malware samples
+Treat any restore as a reconciliation event. Restore all related data from a
+consistent recovery point, start CasePack in recovery mode, complete the
+private diagnostic check, and refresh successfully before resuming ordinary
+writes.
 
-Until then, the safer MVP is a controlled evidence repository with an explicit trust boundary, not a partially implemented scanner that may create false confidence. See [Evidence](/evidence/) and [Evidence Pack Export](/evidence-pack-export/) for user-facing handling guidance.
+## Object Storage
 
-## Kubernetes / Helm Quick Start
+`S3_ENDPOINT` is the API's internal storage address.
+`S3_PUBLIC_ENDPOINT` is the browser-reachable address used in presigned URLs.
+Use HTTPS and a CORS allowlist for the exact SPA origin in production.
 
-Add the chart repository:
+The MVP validates configured file types, extensions, and size, but does not
+perform malware scanning. Keep storage private, retain the curated allowlists,
+and scan downloaded evidence with your organization's security tooling.
 
-```bash
-helm repo add bysamio https://bysamio.github.io/charts/
-helm repo update
-```
+## Operational Checklist
 
-Run activation on an operator workstation:
+- Use TLS for the SPA, API, Keycloak, licensing origin, and browser-facing S3
+  endpoint.
+- Keep one API replica per deployment.
+- Restrict the licensing-state directory to the API container and back it up
+  encrypted.
+- Rotate bootstrap and Keycloak administrator passwords after first use.
+- Monitor API health, credential deadlines, failed refreshes, disk, database,
+  and object-storage backups.
+- Test enrollment, refresh, redeploy, backup, restore, recovery, and replacement
+  before accepting customer data.
+- Do not claim air-gapped operation, live-clone detection, high availability,
+  or Kubernetes support for this preview.
 
-```bash
-cp .env.example .env
-./activate.sh <activation-token>
-```
+## Related
 
-Create a Kubernetes Secret for the API settings and license values. Keep generated env files and manifests containing real values outside source control.
-
-Install the chart:
-
-```bash
-helm upgrade --install casepack bysamio/casepack \
-  --namespace casepack \
-  --create-namespace \
-  -f values.yaml \
-  --wait --wait-for-jobs
-```
-
-For local access to a test cluster:
-
-```bash
-kubectl port-forward svc/casepack-casepack-api 8080:80 -n casepack
-kubectl port-forward svc/casepack-casepack-spa 3000:80 -n casepack
-kubectl port-forward svc/casepack-keycloak 8081:80 -n casepack
-```
-
-Production deployments should use DNS and TLS for the app, API, identity provider, and S3 endpoint:
-
-| Public hostname | Purpose |
-|-----------------|---------|
-| `casepack.example.com` | CasePack app |
-| `api.casepack.example.com` | CasePack API |
-| `auth.casepack.example.com` | Keycloak / OIDC |
-| `s3.casepack.example.com` | Browser-facing S3 endpoint |
-
-## License Renewal
-
-Renew your subscription in the licensing portal, then refresh the local license.
-
-For Docker:
-
-```bash
-./renew-license.sh
-```
-
-For Kubernetes:
-
-```bash
-./renew-license.sh --no-restart
-```
-
-Update the Kubernetes Secret with the refreshed license value, then restart the API deployment:
-
-```bash
-kubectl rollout restart deployment/casepack-casepack-api -n casepack
-kubectl rollout status deployment/casepack-casepack-api -n casepack
-```
-
-For air-gapped environments, download a renewed license file from the portal and install it using the self-host wrapper's manual renewal command.
-
-## Smoke Test Checklist
-
-After installation:
-
-1. Open the CasePack app and sign in as the bootstrap admin.
-2. Confirm `/actuator/health` returns `UP`.
-3. Create or open the first tenant workspace.
-4. Create an incident.
-5. Upload a small evidence file.
-6. Generate an evidence pack export.
-7. Download the export.
-
-If this flow works, the license, identity, API, database, object storage, and web app runtime config are wired correctly.
-
-## Troubleshooting
-
-| Symptom | Likely cause | Fix |
-|---------|--------------|-----|
-| API does not start | Missing license files, wrong installation values, or database connectivity | Re-run activation and inspect API logs |
-| Login redirects with `invalid_scope` | OIDC client scopes are incomplete | Confirm the OIDC client allows `openid`, `profile`, and `email` |
-| Login spinner after callback | App URL, API CORS, OIDC issuer, or redirect URI mismatch | Align the public URLs across app, API, and identity provider |
-| Signed-in user gets `403` | The user exists in OIDC but not in CasePack | Add the user through CasePack administration |
-| Evidence upload fails in browser | Presigned URL points at a hostname the browser cannot reach | Set `S3_PUBLIC_ENDPOINT` to a browser-reachable HTTPS endpoint |
-| Exports stay pending | API cannot write to object storage or lacks resources | Check S3 credentials, bucket access, and API logs |
-
-## Operations Checklist
-
-- Store activation tokens, licenses, and passwords in a secret manager.
-- Rotate bootstrap and Keycloak admin passwords after installation.
-- Use HTTPS for app, API, identity, and S3 endpoints in production.
-- Back up PostgreSQL and object storage together.
-- Keep production and staging on separate databases, buckets, identity realms, and installation IDs.
-- Keep CasePack images and charts updated.
-
-## Related Features
-
-- [Licensing & Access States](/licensing-access/) — Access states and plan-based availability
-- [Pricing Plans](/pricing-plans/) — Self-host commercial plan
-- [Evidence](/evidence/) — Evidence storage behavior
-- [Evidence Pack Export](/evidence-pack-export/) — Exporting evidence packs
+- [Licensing & Access States](/licensing-access/)
+- [Pricing Plans](/pricing-plans/)
+- [Evidence](/evidence/)
+- [Evidence Pack Export](/evidence-pack-export/)

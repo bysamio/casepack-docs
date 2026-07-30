@@ -1,130 +1,130 @@
 ---
 title: Pricing Plans
-description: CasePack subscription tiers, limits, feature comparison, and purchase flow.
+description: CasePack MVP packaging, German VAT presentation, and private self-host design-partner terms.
 ---
 
-CasePack plans are designed around MSP incident reporting operations. Every plan includes the core CasePack workflow; the main differences are scale, deployment model, support level, and commercial terms.
+CasePack is preparing its MVP with sales-assisted design partners. Prices and
+availability on this page are launch hypotheses, not evidence of an established
+customer base or a generally available self-host product.
 
-## Plans
+## Hosted MVP
 
-### Founding Pilot
+Hosted packaging remains subject to customer discovery. It is intended for MSPs
+that want CasePack to operate the application infrastructure and prefer a
+faster onboarding path. Final hosted limits, price points, and checkout are not
+committed on this page.
 
-> **€149/month** or **€1,490/year**
+## Self-Host Founding Design Partner
 
-Best for early MSP design partners validating the workflow.
+> **€1,785 including 19% German VAT** for a six-calendar-month paid pilot
 
-- 5 users
-- 5 tenant workspaces
-- Unlimited incidents
-- Audit log
-- Evidence vault
-- Evidence pack export
-- Webhooks
-- NIS2 timeline milestones
-- Standard support
-- Direct roadmap access
-- Badge: "Limited cohort"
-- CTA: "Book founder pilot"
+Equivalent tax breakdown for a German domestic sale:
 
-### MSP Pro
+| Amount | Value |
+|---|---:|
+| Net | €1,500 |
+| VAT (19%) | €285 |
+| Total | €1,785 |
 
-> **€249/month** or **€2,490/year**
+The private pilot includes:
 
-Best for MSPs running multi-tenant incident reporting.
+- Connected Direct licensing
+- Docker Compose or compatible Podman Compose reference profile
+- one primary plus one recovery/test deployment identity
+- one API replica per deployment
+- unlimited tenant workspaces and users
+- all current CasePack incident, evidence, audit, export, timeline, report, and
+  webhook features
+- one onboarding session and one recovery exercise
+- email support on German business days, with a target initial response within
+  two business days
+- direct product feedback with the founder
 
-- Unlimited users
-- 10 tenant workspaces
-- Unlimited incidents
-- Audit log
-- Evidence vault
-- Evidence pack export
-- Webhooks / PSA intake
-- NIS2 timeline milestones
-- Priority support
-- Badge: "Most popular"
-- CTA: "Book demo"
+It does not include operation of the customer's database, identity provider,
+object storage, networks, backups, or disaster recovery; custom HA/topology
+design; a resolution or uptime SLA; Kubernetes support; air-gapped operation;
+or brokered enterprise licensing.
 
-### Self-Host Standard
+The pilot is sales-assisted and cannot be bought through public checkout.
+Payment starts one six-calendar-month entitlement period. It does not create a
+seed license or deployment identity; deployments are enrolled separately.
 
-> **€6,000/year** (annual billing only)
+### Founding annual conversion
 
-Best for security-sensitive or sovereign environments.
+> **€3,570 including 19% German VAT** for the first 12-month founding term
 
-- 1 production + 1 staging instance
-- 25 tenant workspaces
-- 50 users
-- Instance activation
-- Fingerprint binding
-- Self-host deployment rights
-- Keycloak / SSO support
-- S3-compatible object storage support
-- Standard support
-- CTA: "Get self-host guide"
+German domestic breakdown:
 
-### Partner / Enterprise
+| Amount | Value |
+|---|---:|
+| Net | €3,000 |
+| VAT (19%) | €570 |
+| Total | €3,570 |
 
-> **Custom pricing**
+This is a separate annual period beginning at the pilot end when paid on time.
+The pilot is not credited against it, and the price is not advertised as a
+public multi-year lock. Late re-entry is quoted as a new term.
 
-Best for large MSP groups and custom environments.
+## Tax Presentation
 
-- Everything in Self-Host or Hosted Pro as needed
-- Higher limits
-- White-label / branded exports
-- Custom integrations
-- SLA / onboarding
-- Procurement support
-- CTA: "Contact sales"
+The displayed EUR prices include German VAT because CasePack is launching from
+Germany. The actual invoice depends on verified billing location and tax
+status. An eligible intra-EU B2B reverse-charge invoice may use the €1,500 or
+€3,000 net amount after VAT-ID validation. Quotes and invoices must show gross,
+net, rate, and tax amount or the applicable reverse-charge wording.
 
-## Billing Toggle
+These tax treatments, invoice wording, cancellation, and refund terms remain
+subject to German tax-adviser and legal approval before the first invoice.
 
-The pricing page includes a monthly/yearly toggle:
+## Three Self-Host Licensing Modes
 
-- **Monthly** — Pay month-to-month where the selected plan supports monthly billing
-- **Yearly** — Annual billing, roughly equivalent to a two-month saving on hosted plans
-- **Self-Host Standard** — Annual only
+| Mode | Availability | Commercial status |
+|---|---|---|
+| **Connected Direct** | Private MVP preview | Pilot pricing above |
+| **Air-Gapped Exchange** | Not available | Discovery roadmap; no price |
+| **Enterprise Broker / HA** | Not available | Discovery roadmap; custom scope only after validated demand |
 
-## Comparison Matrix
+The unavailable modes are not feature tiers hidden behind a higher price. They
+have different security, support, recovery, and operational costs and will be
+designed only if qualified buyers demonstrate the need.
 
-The plan comparison highlights limits and included features:
+## Near-Future US Pricing
 
-| Feature | Founding Pilot | MSP Pro | Self-Host | Enterprise |
-|---------|---------------|---------|-----------|------------|
-| Users | 5 | Unlimited | 50 | Unlimited |
-| Tenant Workspaces | 5 | 10 | 25 | Unlimited |
-| Incidents | Unlimited | Unlimited | Unlimited | Unlimited |
-| Instances | 1 | 1 | 2 | Unlimited |
-| Audit Log | ✓ | ✓ | ✓ | ✓ |
-| Evidence Vault | ✓ | ✓ | ✓ | ✓ |
-| Evidence Pack Export | ✓ | ✓ | ✓ | ✓ |
-| Webhooks | ✓ | ✓ | ✓ | ✓ |
-| NIS2 Timelines | ✓ | ✓ | ✓ | ✓ |
-| Delivery Mode | Hosted | Hosted | Self-Host | Any |
-| Support | Standard | Priority | Standard | Dedicated |
+CasePack intends to approach American MSPs. A USD price will be implemented
+after at least five US MSP pricing interviews and tax/legal review.
 
-CasePack also includes incident timeline events and incident reports where available for your plan. See [Licensing & Access States](/licensing-access/) for details about plan-based access.
+USD prices will be:
 
-## Pricing FAQ
+- separate market-specific provider price records
+- displayed excluding tax with “plus applicable sales tax”
+- calculated from verified address, product tax code, customer status,
+  registrations, and nexus through Stripe Tax or an equivalent service
+- isolated from EUR/VAT labels and calculations
 
-The pricing page includes a frequently asked questions section:
+No USD amount is committed yet; applying a simple EUR-to-USD conversion would
+not validate willingness to pay or satisfy US sales-tax obligations.
 
-1. **Why is there no free plan?** — CasePack is built for MSP teams handling real client incidents, evidence, and audit-ready deliverables. Guided pilots help teams implement the right workflow from the start.
-2. **Why don't you charge per incident?** — Incident volume is the wrong incentive. CasePack is priced around operational value.
-3. **Why is self-host separate from hosted?** — Self-host buyers need deployment rights, license activation, SSO alignment, storage control, and a different support model.
-4. **Can we start hosted and move to self-host later?** — Yes. The pricing and licensing model supports hosted-to-self-host transition paths for qualified teams.
+## Why No Tenant or User Limit?
 
-## Plan Selection Flow
+Self-host customers operate their own database and infrastructure, so tenant
+and user limits would add enforcement friction without tracking the main
+vendor-supplied costs. The founding package instead limits active deployment
+identities and the support scope. CasePack may later package paid support,
+additional deployment identities, HA, or advanced enterprise capabilities
+without metering customer records.
 
-1. Select a hosted plan and billing interval on the pricing page
-2. Click the plan CTA
-3. Enter work email and company / MSP name in the checkout dialog
-4. Continue to the licensing checkout portal
+## Purchase Process
 
-If the checkout is cancelled, the pricing page shows a cancellation toast and lets the user retry.
+1. Book a product and deployment-fit conversation.
+2. Confirm the workflow problem, Connected privacy boundary, reference profile,
+   recovery behavior, and support exclusions.
+3. Agree a conditional pilot order and acceptance test.
+4. Invoice only when the agreed activation-readiness gate is met.
+5. Create the entitlement period after cleared payment and enroll each approved
+   deployment separately.
 
-Self-host and enterprise paths use lead forms rather than direct checkout.
+## Related
 
-## Related Features
-
-- [Licensing & Access States](/licensing-access/) — Plan features, limits, and access states
-- [Self-Hosting](/self-hosting/) — Deployment rights and infrastructure requirements
-- [Evidence Pack Export](/evidence-pack-export/) — Export deliverables included in all plans
+- [Self-Hosting](/self-hosting/)
+- [Licensing & Access States](/licensing-access/)
+- [Evidence Pack Export](/evidence-pack-export/)

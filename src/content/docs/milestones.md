@@ -13,9 +13,19 @@ NIS2 (Network and Information Security Directive 2) requires organizations to re
 |-----------|----------|---------|
 | **Early Warning** | 24 hours | Initial notification to competent authority |
 | **Full Notification** | 72 hours | Detailed status update with initial assessment |
-| **Final Report** | 30 days | Complete incident documentation and analysis |
+| **Final Report** | One calendar month after the 72-hour incident-notification deadline | Complete incident documentation and analysis |
 
-Deadlines are calculated from the incident's creation timestamp.
+Deadlines are calculated from the recorded awareness timestamp. CasePack sets
+the 24-hour early-warning and 72-hour incident-notification deadlines from that
+timestamp, then sets the final-report deadline one calendar month after the
+72-hour notification deadline.
+
+This reflects the sequence in
+[NIS2 Article 23(4)](https://eur-lex.europa.eu/eli/dir/2022/2555/art_23/oj);
+local implementing law,
+regulator instructions, incident classification, and the ongoing-incident rule
+can affect what must be submitted. CasePack provides workflow assistance, not a
+legal determination.
 
 ## Enabling NIS2 Tracking
 

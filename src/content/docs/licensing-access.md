@@ -3,7 +3,10 @@ title: Licensing & Access States
 description: Understand plan limits, feature availability, and restricted account states.
 ---
 
-CasePack uses your active plan to determine tenant limits, user limits, available features, deployment mode, and access state. Most teams will only notice this when a feature is not included in their plan or when a subscription needs renewal.
+CasePack uses the active entitlement and locally verified credential to
+determine available features, deployment mode, and access state. Hosted plans
+may have tenant or user limits. The founding self-host offer has unlimited
+tenants and users and permits two active deployment identities.
 
 ## What Your Plan Controls
 
@@ -13,20 +16,23 @@ CasePack uses your active plan to determine tenant limits, user limits, availabl
 | Users | How many people can be invited to CasePack |
 | Feature availability | Which incident, evidence, export, audit, webhook, and reporting features are available |
 | Deployment model | Hosted, self-hosted, or enterprise deployment terms |
-| Access state | Whether the account has full access, renewal warnings, read-only access, export-only access, or suspended access |
+| Access state | Whether the account has full access, renewal warnings, read-only access, export-only access, setup, or custody recovery |
 
 If your account reaches a tenant or user limit, CasePack shows the limit in context so an administrator can remove unused access or upgrade the plan.
 
 ## Access States
 
-CasePack defines six access states that determine what users can do in the app:
+CasePack defines the following access states. Hosted commercial expiry and
+Connected local-state recovery are intentionally different:
 
 | State | Description | UI Behavior |
 |-------|-------------|-------------|
+| **Setup** | A fresh deployment is proven empty and has no verified credential | Customer-data operations are blocked; the operator follows the private enrollment runbook |
 | **Active** | Valid subscription | Full access, no restrictions |
 | **Grace** | Subscription expired, within grace period | Full access with warning banner |
 | **Read-Only Expired** | Grace period ended | Read pages remain visible; create, update, delete, upload, and generation actions are blocked |
 | **Export Only** | Limited access for data retrieval | Only existing evidence/export downloads and billing remain available |
+| **Recovery Read/Export** | A populated deployment has missing, corrupt, restored, expired, or otherwise untrusted Connected state | Existing data remains readable and permitted exports remain available; ordinary writes pause until reconciliation |
 | **Suspended** | Account suspended | No access, contact support banner |
 | **Terminated** | Account permanently terminated | No access, account closed banner |
 
@@ -37,6 +43,10 @@ Each non-active state displays a prominent banner so users understand what chang
 - **Grace** — Yellow warning that the subscription or license is overdue and full access will become read-only if not renewed.
 - **Read-Only Expired** — Red error that the workspace or instance is in read-only mode and renewal restores full access.
 - **Export Only** — Red error that only existing exports and evidence can be downloaded.
+- **Setup** — Blue operator notice explaining that enrollment is required before
+  customer data is created.
+- **Recovery Read/Export** — Amber operator notice that data is safe and
+  readable/exportable while private diagnostics and recovery are completed.
 - **Suspended** — Red error: "Your account has been suspended. Contact support to resolve this issue."
 - **Terminated** — Red error: "Your account has been terminated."
 
@@ -63,7 +73,17 @@ Restricted access states protect your data while limiting changes:
 - **Read-Only Expired** still allows read access. Users can view incidents, evidence lists, webhook delivery history, milestones, reports, timeline events, and audit logs when their role and plan allow it.
 - Write actions are blocked in read-only mode, including creating incidents, editing incident fields, uploading or deleting evidence, completing milestones, managing webhooks, generating exports or reports, and changing tenant/user settings.
 - Existing evidence files and completed exports remain downloadable in read-only mode.
+- Recovery Read/Export also pauses webhook intake, licensing provisioning, and
+  internal reset actions so externally initiated writes cannot change restored
+  data before reconciliation.
 - **Export Only** blocks the normal workspace pages and keeps only existing evidence/export downloads and renewal or billing actions available.
+- **Recovery Read/Export** is a data-custody floor, not an upgrade prompt. It
+  permits authenticated reads, audit access, licensing diagnostics, and the
+  creation, status polling, and download of a complete custody archive while
+  blocking ordinary mutations, uploads, and outbound webhook work. Customer
+  administrators start that archive from the recovery banner.
+- **Setup** is selected only after the API proves the customer database is
+  empty. If database emptiness is uncertain, CasePack selects recovery.
 - Suspended and terminated accounts do not allow operational workspace access.
 
 ## API Behavior
@@ -73,6 +93,10 @@ Authenticated tenant and customer API requests follow the same rules:
 - `GET`, `HEAD`, and `OPTIONS` requests are allowed in **Read-Only Expired** when the user's role and plan permit the resource.
 - `POST`, `PUT`, `PATCH`, and `DELETE` requests in **Read-Only Expired** return `403 Forbidden` with `errorCode: "license_read_only"`.
 - **Export Only** allows only existing evidence/export download requests. Other operational requests return `403 Forbidden` with `errorCode: "license_export_only"`.
+- **Setup** customer-data requests return `errorCode:
+  "license_setup_required"`.
+- Blocked recovery writes return `errorCode:
+  "license_recovery_read_export"` and an explicit allowed-action list.
 
 Restricted license responses include the current state and remaining allowed actions:
 
@@ -92,6 +116,11 @@ Restricted license responses include the current state and remaining allowed act
   "correlationId": "..."
 }
 ```
+
+Connected deployments also strictly verify a key-bound EdDSA credential
+locally. The customer-visible entitlement remains one commercial record;
+deployment rows are enrolled identities, and refresh revisions are internal
+history rather than additional licenses.
 
 ## Export Data Page
 
