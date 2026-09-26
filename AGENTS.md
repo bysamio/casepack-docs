@@ -40,9 +40,11 @@ src/
 ├── content/docs/       # One .md/.mdx file per page — this is almost all of the repo's content
 ├── content.config.ts   # Starlight docs collection loader/schema (rarely needs edits)
 ├── assets/             # Logo SVGs (light/dark)
+├── pages/              # Non-doc endpoints: llms.txt / llms-full.txt (plain-text docs for AI assistants)
+├── utils/llms.ts       # Shared helpers for those endpoints
 └── styles/custom.css   # Starlight theme overrides — matches the CasePack SPA design system
 astro.config.mjs        # Site title, social links, head tags, and the SIDEBAR STRUCTURE
-public/                 # Static passthrough (favicon, etc.)
+public/                 # Static passthrough (favicon, robots.txt, etc.)
 infrastructure/
 ├── helm/casepack-docs/ # values-staging.yaml, values-prod.yaml
 └── argocd/             # ArgoCD Application manifests for staging/prod

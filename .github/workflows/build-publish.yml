@@ -66,6 +66,21 @@ jobs:
       - name: Build site
         run: npm run build
 
+      # Crawlers and AI assistants read the docs through these files; fail the
+      # build if one goes missing or a page starts opting out of indexing.
+      - name: Check crawl files
+        run: |
+          set -euo pipefail
+          test -s dist/robots.txt
+          test -s dist/sitemap-index.xml
+          head -n 1 dist/llms.txt | grep -qx '# CasePack Docs'
+          grep -q 'https://docs.casepack.app/getting-started/' dist/llms.txt
+          test -s dist/llms-full.txt
+          if grep -rliE --include='*.html' --exclude='404.html' '<meta[^>]*name="robots"[^>]*noindex' dist; then
+            echo "::error::A docs page is marked noindex"
+            exit 1
+          fi
+
       - name: Upload build artifact
         if: success()
         uses: actions/upload-artifact@v4

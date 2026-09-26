@@ -1,0 +1,6 @@
+# docs.casepack.app — open to all crawlers, including AI search and
+# assistant crawlers. AI-friendly indexes: /llms.txt and /llms-full.txt.
+User-agent: *
+Allow: /
+
+Sitemap: https://docs.casepack.app/sitemap-index.xml
