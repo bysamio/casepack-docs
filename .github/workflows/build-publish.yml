@@ -66,6 +66,33 @@ jobs:
       - name: Build site
         run: npm run build
 
+      # Crawlers and AI assistants read the docs through these files; fail the
+      # build if one goes missing or a page starts opting out of indexing.
+      - name: Check crawl files
+        run: |
+          set -euo pipefail
+          test -s dist/robots.txt
+          test -s dist/sitemap-index.xml
+          head -n 1 dist/llms.txt | grep -qx '# CasePack Docs'
+          grep -q 'https://docs.casepack.app/getting-started/' dist/llms.txt
+          test -s dist/llms-full.txt
+          if grep -rliE --include='*.html' --exclude='404.html' '<meta[^>]*name="robots"[^>]*noindex' dist; then
+            echo "::error::A docs page is marked noindex"
+            exit 1
+          fi
+          # Every page the llms files list must be a published page.
+          listed=$( {
+            sed -nE 's#^- \[[^]]*\]\((https://docs\.casepack\.app/[^)]*)\).*#\1#p' dist/llms.txt
+            sed -nE 's#^Source: (https://docs\.casepack\.app/[^ ]*)$#\1#p' dist/llms-full.txt
+          } | sort -u )
+          test -n "$listed"
+          for url in $listed; do
+            if [ ! -f "dist${url#https://docs.casepack.app}index.html" ]; then
+              echo "::error::$url is listed in the llms files but has no published page"
+              exit 1
+            fi
+          done
+
       - name: Upload build artifact
         if: success()
         uses: actions/upload-artifact@v4
@@ -73,6 +100,36 @@ jobs:
           name: dist
           path: dist/
           retention-days: 7
+
+      # Starlight leaves draft pages out of the site, but getCollection() still
+      # returns them. Rebuild with a throwaway draft (after the artifact upload,
+      # so it never ships) and fail if any trace of it reaches the output,
+      # including /llms.txt and /llms-full.txt.
+      - name: Check drafts stay unpublished
+        run: |
+          set -euo pipefail
+          marker="ci-draft-marker-${GITHUB_RUN_ID}"
+          fixture=src/content/docs/ci-draft-check.md
+          trap 'rm -f "$fixture"' EXIT
+          cat > "$fixture" <<EOF
+          ---
+          title: Draft check ${marker}
+          description: Unpublished page ${marker}
+          draft: true
+          ---
+
+          Unpublished content ${marker}.
+          EOF
+          npm run build
+          test -s dist/llms-full.txt
+          if [ -e dist/ci-draft-check/index.html ]; then
+            echo "::error::The draft page was built"
+            exit 1
+          fi
+          if grep -rlF "$marker" dist; then
+            echo "::error::Draft page content was published in the files above"
+            exit 1
+          fi
 
   # ─── Stage 2: Build & Publish Docker Image ─────────────────────
   build-and-push:
