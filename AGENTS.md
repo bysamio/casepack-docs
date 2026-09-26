@@ -41,7 +41,7 @@ src/
 ├── content.config.ts   # Starlight docs collection loader/schema (rarely needs edits)
 ├── assets/             # Logo SVGs (light/dark)
 ├── pages/              # Non-doc endpoints: llms.txt / llms-full.txt (plain-text docs for AI assistants)
-├── utils/llms.ts       # Shared helpers for those endpoints
+├── utils/llms.ts       # Shared helpers for those endpoints (published pages only; `draft: true` pages are filtered out)
 └── styles/custom.css   # Starlight theme overrides — matches the CasePack SPA design system
 astro.config.mjs        # Site title, social links, head tags, and the SIDEBAR STRUCTURE
 public/                 # Static passthrough (favicon, robots.txt, etc.)
@@ -76,7 +76,7 @@ There is no test suite. Verification for any change = `npm run check` + `npm run
 
 - Version lives in `package.json` (currently a `-dev` prerelease between releases).
 - Releases are cut via the `Release` GitHub Action (`workflow_dispatch` on `.github/workflows/release.yml`): bumps `package.json` to the release version and pushes it to `main`, tags `vX.Y.Z`, creates a GitHub Release, explicitly dispatches the release image build, then bumps `main` to the next `-dev` version.
-- `build-publish.yml` runs on every push/PR (type-check + build); on `main`/tags it also builds & pushes a multi-arch Docker image to `ghcr.io/bysamio/casepack-docs`, and on tags opens a PR against `bysamio/charts` bumping the Helm chart version.
+- `build-publish.yml` runs on every push/PR (type-check + build, then checks robots.txt, the sitemap and the llms files, and rebuilds with a throwaway draft page to confirm drafts stay unpublished); on `main`/tags it also builds & pushes a multi-arch Docker image to `ghcr.io/bysamio/casepack-docs`, and on tags opens a PR against `bysamio/charts` bumping the Helm chart version.
 - Don't hand-edit the chart version in `bysamio/charts` — that PR is automated.
 
 ### Branch protection & the RELEASE_TOKEN secret

@@ -13,8 +13,12 @@ const FALLBACK_SITE = 'https://docs.casepack.app';
 // The home page and Quick Start lead; the rest follow alphabetically by title.
 const LEADING_PAGES = ['index', 'getting-started'];
 
+/** Published docs pages, in the order the llms files list them. */
 export async function getDocsForLlms(): Promise<DocsEntry[]> {
-  const docs = await getCollection('docs');
+  // Starlight leaves `draft: true` pages out of the production site, but
+  // getCollection() still returns them. Filter them here so unpublished pages
+  // never reach these public files (CI builds a throwaway draft to check this).
+  const docs = await getCollection('docs', ({ data }) => !data.draft);
   const rank = (entry: DocsEntry) => {
     const index = LEADING_PAGES.indexOf(entry.id);
     return index === -1 ? LEADING_PAGES.length : index;
