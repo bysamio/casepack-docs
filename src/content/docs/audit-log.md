@@ -53,6 +53,13 @@ The Audit Log provides a searchable, read-only timeline of all significant actio
 | `MILESTONE_COMPLETED` | NIS2 milestone marked as done, with the submission time |
 | `MILESTONE_DUE_RECALCULATED` | A milestone deadline moved, with the old and new date (for example, the final report after the 72-hour notification was submitted) |
 | `MILESTONE_SUBMISSION_CORRECTED` | An Owner corrected a milestone's submission time, with the old and new time and the reason |
+| `MILESTONE_REMINDER_SENT` | A deadline reminder was sent, with the reminder, the deadline and the number of recipients |
+| `MILESTONE_ESCALATED` | A missed deadline was escalated, with the deadline and the number of recipients |
+| `NOTIFICATION_SETTINGS_UPDATED` | An Owner turned reminders on or off or changed their times |
+| `NIS2_CONTACT_ADDED` | An Owner added an external contact |
+| `NIS2_CONTACT_REMOVED` | An Owner removed an external contact |
+| `NIS2_CONTACT_CONFIRMED` | An external contact confirmed by link (actor: system) |
+| `NIS2_CONTACT_UNSUBSCRIBED` | An external contact unsubscribed (actor: system) |
 | `TIMELINE_EVENT_CREATED` | Timeline event added |
 | `TIMELINE_EVENT_UPDATED` | Timeline event changed |
 | `TIMELINE_EVENT_DELETED` | Timeline event deleted |
