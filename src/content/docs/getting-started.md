@@ -60,7 +60,7 @@ NIS2 milestone tracking is **opt-in per incident**. To enable it:
 3. Three milestones are created:
    - **Early Warning** (24h) — Initial notification
    - **Full Notification** (72h) — Detailed status update with initial assessment
-   - **Final Report** (30d) — Complete incident documentation
+   - **Final Report** (one month after the 72h notification is submitted) — Complete incident documentation
 
 Check the **Overdue** sidebar item for deadlines across all incidents.
 
