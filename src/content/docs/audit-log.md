@@ -50,7 +50,9 @@ The Audit Log provides a searchable, read-only timeline of all significant actio
 | `WEBHOOK_DISABLED` | Webhook endpoint disabled |
 | `NIS2_ENABLED` | NIS2 reporting enabled for an incident |
 | `MILESTONE_CREATED` | NIS2 milestone created |
-| `MILESTONE_COMPLETED` | NIS2 milestone marked as done |
+| `MILESTONE_COMPLETED` | NIS2 milestone marked as done, with the submission time |
+| `MILESTONE_DUE_RECALCULATED` | A milestone deadline moved, with the old and new date (for example, the final report after the 72-hour notification was submitted) |
+| `MILESTONE_SUBMISSION_CORRECTED` | An Owner corrected a milestone's submission time, with the old and new time and the reason |
 | `TIMELINE_EVENT_CREATED` | Timeline event added |
 | `TIMELINE_EVENT_UPDATED` | Timeline event changed |
 | `TIMELINE_EVENT_DELETED` | Timeline event deleted |
