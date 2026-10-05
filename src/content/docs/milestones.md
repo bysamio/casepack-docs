@@ -24,7 +24,8 @@ Until the 72-hour notification is completed, CasePack shows the final-report
 date as **"at the latest"**: one month after the 72-hour deadline, the latest
 it can be. If the 72-hour deadline passes without a submission, the card shows
 no date, because the final report is due one month after whenever the
-notification is eventually submitted.
+notification is eventually submitted. The final report is never marked overdue
+in that state; the overdue 72-hour notification is what needs attention.
 
 This reflects the sequence in
 [NIS2 Article 23(4)](https://eur-lex.europa.eu/eli/dir/2022/2555/art_23/oj);
@@ -97,6 +98,12 @@ Milestones completed before submission times were recorded show **"Submission
 time not recorded"**. Owners can click **"Enter submission time"** to add it;
 this is recorded as a correction.
 
+Until then, the final-report deadline for such an incident is an **estimate**:
+one month after the earlier of when the 72-hour report was marked complete and
+its deadline. The card labels it **(estimated)**, and the export records its
+basis as `ESTIMATED_FROM_COMPLETION`. Entering the 72-hour report's submission
+time replaces the estimate with the exact date.
+
 ## Deadline Reminders
 
 CasePack reminds the person who enabled NIS2 and the workspace Owners before each
@@ -110,7 +117,9 @@ where email is set up, by email. See [Notifications & Reminders](/notifications/
 The sidebar shows an **Overdue Milestones** page link with a badge count of overdue items across all incidents.
 
 The Overdue Milestones page:
-- Lists all overdue milestones across all incidents in the tenant
+- Lists all overdue milestones across all incidents in the tenant (a final report
+  still waiting for the 72-hour submission is not listed, because its deadline
+  hasn't started yet)
 - Shows milestone type, incident title, deadline, and how overdue it is
 - Click any row to navigate to the incident detail page
 
