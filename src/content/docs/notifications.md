@@ -38,6 +38,11 @@ your team actually became aware of the incident. See [NIS2 Milestones](/mileston
 Nothing is sent while the workspace is read-only or export-only, or when the plan
 doesn't include NIS2 milestones.
 
+Recipients are checked again just before each email is sent, including retries.
+An email that is still waiting stops if reminders are turned off, if the
+recipient is removed from the workspace or their account is disabled, or if an
+external contact unsubscribes or is removed.
+
 ## The Notification Bell
 
 The bell in the header lists your reminders, escalations and "clocks started"
@@ -96,7 +101,8 @@ unsubscribe link.
 | **Unsubscribed** | They unsubscribed; remove and add them again to ask once more |
 
 One confirmation email is sent per address per day, including after removing and
-re-adding someone.
+re-adding someone. Removing a contact, or their unsubscribing, also stops any
+reminder already waiting to be sent to them.
 
 ## Audit Trail
 
