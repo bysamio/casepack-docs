@@ -13,12 +13,19 @@ NIS2 (Network and Information Security Directive 2) requires organizations to re
 |-----------|----------|---------|
 | **Early Warning** | 24 hours | Initial notification to competent authority |
 | **Full Notification** | 72 hours | Detailed status update with initial assessment |
-| **Final Report** | One calendar month after the 72-hour incident-notification deadline | Complete incident documentation and analysis |
+| **Final Report** | One calendar month after the 72-hour notification was **submitted** | Complete incident documentation and analysis |
 
-Deadlines are calculated from the recorded awareness timestamp. CasePack sets
-the 24-hour early-warning and 72-hour incident-notification deadlines from that
-timestamp, then sets the final-report deadline one calendar month after the
-72-hour notification deadline.
+The 24-hour and 72-hour deadlines run from the recorded awareness timestamp.
+The final report runs from when you actually submitted the 72-hour
+notification: if you file it at hour 20, the final report is due one calendar
+month after hour 20, not after the 72-hour deadline.
+
+Until the 72-hour notification is completed, CasePack shows the final-report
+date as **"at the latest"**: one month after the 72-hour deadline, the latest
+it can be. If the 72-hour deadline passes without a submission, the card shows
+no date, because the final report is due one month after whenever the
+notification is eventually submitted. The final report is never marked overdue
+in that state; the overdue 72-hour notification is what needs attention.
 
 This reflects the sequence in
 [NIS2 Article 23(4)](https://eur-lex.europa.eu/eli/dir/2022/2555/art_23/oj);
@@ -50,19 +57,54 @@ Each milestone can be in one of three states:
 
 ### Completing a Milestone
 
+Tenant Owners complete milestones.
+
 1. Open the incident's **Milestones** tab
-2. Click **"Complete"** on a pending milestone
-3. A confirmation dialog appears with a notes field (optional)
-4. The milestone is marked as completed with the current timestamp
+2. Click **"Mark Complete"** on a pending milestone
+3. Enter when the report **reached the authority** (defaults to now). Use the
+   time on the authority's receipt if you have one; it can't be before the
+   awareness time or in the future
+4. Add optional notes and confirm
+
+For the 72-hour notification, the dialog shows the final-report deadline the
+submission time produces before you confirm. CasePack records both the
+submission time and when the milestone was marked complete.
 
 > Milestones cannot be completed in read-only or export-only subscription states. See [Licensing & Access States](/licensing-access/).
+
+### Correcting a Submission Time
+
+A mistyped submission time can be corrected by a tenant Owner:
+
+1. On a completed milestone, click **"Correct submission time"**
+2. Enter the correct time and a **reason** (required), such as "BSI portal
+   receipt shows 16:00 CET"
+3. Save
+
+The old time, new time, reason, who made the change, and when are recorded in
+the [Audit Log](/audit-log/), and the milestone shows **Corrected**.
+Correcting the 72-hour notification moves the final-report deadline, even if
+the final report is already complete, so the record shows whether it was filed
+on time.
+
+Milestones completed before submission times were recorded show **"Submission
+time not recorded"**. Owners can click **"Enter submission time"** to add it;
+this is recorded as a correction.
+
+Until then, the final-report deadline for such an incident is an **estimate**:
+one month after the earlier of when the 72-hour report was marked complete and
+its deadline. The card labels it **(estimated)**, and the export records its
+basis as `ESTIMATED_FROM_COMPLETION`. Entering the 72-hour report's submission
+time replaces the estimate with the exact date.
 
 ## Overdue Milestones
 
 The sidebar shows an **Overdue Milestones** page link with a badge count of overdue items across all incidents.
 
 The Overdue Milestones page:
-- Lists all overdue milestones across all incidents in the tenant
+- Lists all overdue milestones across all incidents in the tenant (a final report
+  still waiting for the 72-hour submission is not listed, because its deadline
+  hasn't started yet)
 - Shows milestone type, incident title, deadline, and how overdue it is
 - Click any row to navigate to the incident detail page
 
@@ -74,6 +116,7 @@ On the incident detail Milestones tab, each milestone shows:
 - **Deadline** — Date and time, with "overdue" badge if past due
 - **Status** — Pending, Completed, or Overdue
 - **Completed at** — Timestamp and user who completed it (if applicable)
+- **Submitted to the authority** — When the report was submitted, and whether it was corrected
 - **Notes** — Optional notes provided on completion
 
 ## Tips & Best Practices

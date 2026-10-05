@@ -31,12 +31,22 @@ A structured document containing:
 
 ### ZIP Export
 A compressed archive containing:
-- All evidence files in their original format
+- All evidence files in their original format, under `evidence/`
 - `manifest.json` — Machine-readable metadata:
   - Incident details
   - Evidence count
-  - Milestone status
+  - Milestone status, including each deadline's basis and the recorded submission times
   - Export timestamp
+- `milestones.json` — NIS2 milestones with deadlines, completion and submission times (when NIS2 is enabled)
+
+If two evidence files would have the same name in the ZIP (including names
+that differ only in upper and lower case), the later one gets the first eight
+characters of its evidence ID before the extension, for example
+`screenshot-1a2b3c4d.png`. If that name is taken too, it gets its full evidence
+ID instead, so every file in the pack has its own entry.
+
+If an evidence file can't be read from storage, the export fails and names the
+file, rather than producing an incomplete pack.
 
 ## Export List
 
