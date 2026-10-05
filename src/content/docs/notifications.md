@@ -13,7 +13,7 @@ completed. Reminders appear in the app and, where email is set up, by email.
 |----------|-------------------|
 | **Early Warning** (24 hours) | 18 and 22 hours after awareness |
 | **Full Notification** (72 hours) | 60 and 70 hours after awareness |
-| **Final Report** (one month) | 7 days and 1 day before the deadline, once the 72-hour notification is submitted |
+| **Final Report** (one month) | 7 days and 1 day before the deadline, once the 72-hour notification is submitted (or, for older incidents, before the estimated deadline; those reminders say "estimated") |
 
 - **Clocks started.** Enabling NIS2 sends one message listing all three deadlines,
   unless reminders are turned off.
