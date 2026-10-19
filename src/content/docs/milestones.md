@@ -39,9 +39,16 @@ legal determination.
 NIS2 milestone tracking is **opt-in per incident** — not all incidents need regulatory reporting.
 
 1. Open the incident detail page
-2. Click the **⋯ (More actions)** menu
+2. Click the **⋯ (More actions)** menu, or open the **Milestones** tab
 3. Select **"Enable NIS2 Reporting"**
-4. Three milestones are created immediately
+4. Enter when your team **became aware** of the incident. It defaults to now;
+   change it if you became aware earlier. It can't be in the future or more than
+   a year ago. The dialog previews the 24-hour and 72-hour deadlines and flags any
+   that have already passed
+5. Confirm. Three milestones are created and
+   [deadline reminders](/notifications/) start
+
+Tenant Owners enable NIS2 reporting.
 
 > The "Enable NIS2 Reporting" action is only available when the `nis2Timeline` feature is included in your plan. See [Licensing & Access States](/licensing-access/).
 
@@ -97,6 +104,14 @@ its deadline. The card labels it **(estimated)**, and the export records its
 basis as `ESTIMATED_FROM_COMPLETION`. Entering the 72-hour report's submission
 time replaces the estimate with the exact date.
 
+## Deadline Reminders
+
+CasePack reminds the person who enabled NIS2 and the workspace Owners before each
+deadline (by default 18 and 22 hours after awareness for the early warning, 60 and
+70 hours for the notification, and 7 days and 1 day before the final report), and
+escalates a missed deadline once. Reminders appear in the notification bell and,
+where email is set up, by email. See [Notifications & Reminders](/notifications/).
+
 ## Overdue Milestones
 
 The sidebar shows an **Overdue Milestones** page link with a badge count of overdue items across all incidents.
@@ -124,7 +139,8 @@ On the incident detail Milestones tab, each milestone shows:
 - Enable NIS2 reporting only for incidents that require regulatory notification
 - Complete the Early Warning milestone first — it has the tightest deadline
 - Add notes when completing milestones to document what was communicated
-- Check the Overdue Milestones page daily to avoid missing deadlines
+- Enter the real awareness time when enabling NIS2; deadlines and reminders count from it
+- Watch the notification bell and the Overdue Milestones page for approaching deadlines
 - All milestones are included in evidence pack exports
 
 ## Related Features
@@ -132,3 +148,4 @@ On the incident detail Milestones tab, each milestone shows:
 - [Incidents](/incidents/) — Enabling milestones on incidents
 - [Evidence Pack Export](/evidence-pack-export/) — Milestones included in exports
 - [Dashboard](/dashboard/) — Overdue count visible in sidebar
+- [Notifications & Reminders](/notifications/) — Reminder schedule, bell and external contacts
