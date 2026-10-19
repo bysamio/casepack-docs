@@ -90,4 +90,4 @@ Because of this, the release job **cannot** use the default `GITHUB_TOKEN` to pu
 
 ## Deployment
 
-Static site served by nginx (`nginx.conf` sets security headers, aggressive caching on hashed assets, `/healthz`). Deployed via Helm chart in `infrastructure/helm/casepack-docs/`, synced by ArgoCD (Applications in `bysamio/argocd/managed/`) to staging (`staging.docs.casepack.app`) and prod (`docs.casepack.app`). Don't push to these manually — deploys flow through the release pipeline above.
+Static site served by nginx (`nginx.conf` sets security headers, aggressive caching on hashed assets, `/healthz`). Environment values live in `infrastructure/helm/casepack-docs/`. The staging (`staging.docs.casepack.app`) and production (`docs.casepack.app`) Argo CD Applications live in [`bysamio/argocd`](https://github.com/bysamio/argocd/tree/main/managed) with a pinned chart version and full source commit SHA. Publishing the chart opens or updates a staging PR there. After that PR merges, live Argo CD health and a public smoke check gate a production PR. Review and merge each promotion PR; don't apply product Application manifests from this repository.
