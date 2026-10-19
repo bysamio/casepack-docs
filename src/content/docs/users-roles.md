@@ -41,7 +41,9 @@ Tenant roles control access within a single tenant. A user can have different te
 | Create and edit incidents | ✓ | ✓ | — |
 | Upload and delete evidence | ✓ | ✓ | — |
 | Add and edit timeline events | ✓ | ✓ | — |
-| Complete milestones | ✓ | ✓ | — |
+| Enable NIS2 reporting and complete milestones | ✓ | — | — |
+| Correct milestone submission times | ✓ | — | — |
+| Change NIS2 reminder settings and external contacts | ✓ | — | — |
 | Request exports and reports | ✓ | ✓ | — |
 | Manage webhooks | ✓ | — | — |
 | View audit log | ✓ | — | — |

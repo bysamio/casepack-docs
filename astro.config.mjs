@@ -72,6 +72,7 @@ export default defineConfig({
             { label: 'Incidents', slug: 'incidents' },
             { label: 'Evidence', slug: 'evidence' },
             { label: 'NIS2 Milestones', slug: 'milestones' },
+            { label: 'Notifications & Reminders', slug: 'notifications' },
             { label: 'Incident Reports', slug: 'incident-reports' },
             { label: 'Incident Timeline', slug: 'incident-timeline' },
             { label: 'Evidence Pack Export', slug: 'evidence-pack-export' },
