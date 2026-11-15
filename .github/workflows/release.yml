@@ -87,19 +87,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit release version bump
+      - name: Commit release version bump and tag
         run: |
           npm version ${{ steps.versions.outputs.release_version }} --no-git-tag-version --allow-same-version
           git add package.json package-lock.json
           git diff --cached --quiet || git commit -m "chore: release v${{ steps.versions.outputs.release_version }}"
-          git push
+          git tag "v${{ steps.versions.outputs.release_version }}"
+          # One atomic push for the commit and the tag: both land or neither does.
+          # Two back-to-back pushes raced in casepack-spa on 2026-11-15: the tag
+          # push was rejected with "missing necessary objects" just after the
+          # commit push succeeded, leaving main bumped but untagged. Both refs
+          # use the RELEASE_TOKEN that actions/checkout persisted.
+          git push --atomic origin HEAD:main "v${{ steps.versions.outputs.release_version }}"
 
-      - name: Create tag and GitHub Release
+      - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git tag "v${{ steps.versions.outputs.release_version }}"
-          git push origin "v${{ steps.versions.outputs.release_version }}"
           gh release create "v${{ steps.versions.outputs.release_version }}" \
             --title "v${{ steps.versions.outputs.release_version }}" \
             --generate-notes
