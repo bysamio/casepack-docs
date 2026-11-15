@@ -85,7 +85,7 @@ There is no test suite. Verification for any change = `npm run check` + `npm run
 ## Versioning & Release
 
 - Version lives in `package.json` (currently a `-dev` prerelease between releases).
-- Releases are cut via the `Release` GitHub Action (`workflow_dispatch` on `.github/workflows/release.yml`): bumps `package.json` to the release version and pushes it to `main`, tags `vX.Y.Z`, creates a GitHub Release, explicitly dispatches the release image build, then bumps `main` to the next `-dev` version.
+- Releases are cut via the `Release` GitHub Action (`workflow_dispatch` on `.github/workflows/release.yml`): bumps `package.json` to the release version, tags `vX.Y.Z`, pushes the commit and the tag to `main` in one atomic push, creates a GitHub Release, explicitly dispatches the release image build, then bumps `main` to the next `-dev` version.
 - `build-publish.yml` runs on every push/PR (type-check + build, then checks robots.txt, the sitemap and the llms files, and rebuilds with a throwaway draft page to confirm drafts stay unpublished); on `main`/tags it also builds & pushes a multi-arch Docker image to `ghcr.io/bysamio/casepack-docs`, and on tags opens a PR against `bysamio/charts` bumping the Helm chart version.
 - Don't hand-edit the chart version in `bysamio/charts` — that PR is automated.
 
@@ -96,7 +96,7 @@ There is no test suite. Verification for any change = `npm run check` + `npm run
 Because of this, the release job **cannot** use the default `GITHUB_TOKEN` to push to `main` (it authenticates as `github-actions[bot]`, which is not exempt and gets rejected with `GH006: Protected branch update failed`). Instead `release.yml` checks out with `secrets.RELEASE_TOKEN` — a **fine-grained PAT owned by `bysamio`** (a repo admin, hence exempt) scoped to this repo with **Contents: Read and write**.
 
 - If a release fails on `git push` with a protected-branch error, `RELEASE_TOKEN` is almost certainly **missing or expired**. Fine-grained PATs expire (max 1 year) — rotate it and re-set the secret: `gh secret set RELEASE_TOKEN --repo bysamio/casepack-docs`.
-- `RELEASE_TOKEN` is only needed for pushing to `main`. The tag push and GitHub Release use the plain `GITHUB_TOKEN`; that's why the release-image build is triggered by an **explicit `gh workflow run` dispatch** — `build-publish.yml` filters its tag trigger by `paths`, so relying on the tag push to auto-trigger it is unreliable.
+- `actions/checkout` persists `RELEASE_TOKEN`, so every `git push` in the job uses it, including the atomic push of the release commit and tag. Only `gh release create` and the workflow dispatches use the plain `GITHUB_TOKEN`. The release-image build is triggered by an **explicit `gh workflow run` dispatch** because `build-publish.yml` filters its tag trigger by `paths`, so relying on the tag push to auto-trigger it is unreliable.
 - The same branch protection is applied to `bysamio/charts`, `bysamio/images`, and `bysamio/casepack`. Those repos don't push to their own protected `main` in CI, so they don't need a `RELEASE_TOKEN` today.
 
 ## Deployment
