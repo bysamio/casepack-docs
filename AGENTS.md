@@ -20,7 +20,18 @@ This repo ships agent skills in [`.agents/skills/`](.agents/skills/). **Always i
 Rules:
 - **Default to using a skill.** If a task plausibly matches a skill's trigger, invoke it.
 - More than one skill can apply to a single task. Use all that apply.
-- Where a skill is silent, follow the conventions below.
+- Where a skill is silent, follow the conventions below. Where this file explicitly overrides a skill (see [Plans and task lists](#plans-and-task-lists)), this file wins.
+
+## Plans and task lists
+
+Every piece of agent work that takes more than one step gets its own folder in `tasks/`, so whoever follows along can tell which plan is in progress. The upstream planning skills (`planning-and-task-breakdown`, `spec-driven-development`) default to `tasks/plan.md` and `tasks/todo.md`. If you use them, read those paths as `tasks/<name>/plan.md` and `tasks/<name>/todo.md`. Skills are vendored and re-synced from upstream (`skills-lock.json`), so the override lives here.
+
+- **One folder per piece of work:** `tasks/<name>/`, where `<name>` is two to five lowercase words in kebab-case that say what the work is, e.g. `tasks/notifications-page/`. Never write `plan.md` or `todo.md` directly in `tasks/`, and never reuse a folder for different work.
+- **`plan.md`:** what the work is and why, where it comes from (roadmap item, spec, issue or request), the approach, risks, and how it will be verified.
+- **`todo.md`:** the checklist. Directly under the title, a line starting `Status: Active` (or `Paused` / `Complete`), then the branch and PR once they exist, and a link to `plan.md`.
+- **Create both before implementing**, and commit them first on the work's branch. When you start, tell the user the path to `todo.md`.
+- **Tick each item as soon as it is done** and commit the tick with that slice, so `todo.md` always shows real progress. When the work is finished, set `Status: Complete` and record the verification results.
+- See [`tasks/README.md`](tasks/README.md).
 
 ## Tech Stack
 
