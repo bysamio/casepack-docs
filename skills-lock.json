@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "code-review-and-quality": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/code-review-and-quality/SKILL.md",
+      "computedHash": "0a811c293c9f6f7336ce18baaf5930c1435351b85f432819ae61f2a952ec68b2"
+    },
+    "frontend-ui-engineering": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-ui-engineering/SKILL.md",
+      "computedHash": "cd191bdd08c5ec373c6bc98a4ad5435c50fa7453a2276095e52a6ea7e1000c9d"
+    },
+    "incremental-implementation": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/incremental-implementation/SKILL.md",
+      "computedHash": "bb1198705f46dc9ff75fb5685a7a872de5924d743b44eb202135f5046750ab7e"
+    },
+    "security-and-hardening": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/security-and-hardening/SKILL.md",
+      "computedHash": "e637d98a4144f15bffeb29a00031d0e3a26bdd3364b8d6f4f3f635a8b97e71a7"
+    }
+  }
+}
