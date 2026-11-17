@@ -11,7 +11,17 @@ export default defineConfig({
         dark: './src/assets/logo-dark.svg',
         replacesTitle: true,
       },
-      customCss: ['./src/styles/custom.css'],
+      // Inter is self-hosted from @fontsource/inter instead of Google Fonts, so
+      // no visitor's IP address goes to Google (German courts have ruled the
+      // CDN unlawful without consent). Same weights as before: 400–700.
+      // Source: https://starlight.astro.build/guides/customization/#set-up-a-fontsource-font
+      customCss: [
+        '@fontsource/inter/400.css',
+        '@fontsource/inter/500.css',
+        '@fontsource/inter/600.css',
+        '@fontsource/inter/700.css',
+        './src/styles/custom.css',
+      ],
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/bysamio/casepack-docs' },
       ],
@@ -19,28 +29,6 @@ export default defineConfig({
         baseUrl: 'https://github.com/bysamio/casepack-docs/edit/main/',
       },
       head: [
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preconnect',
-            href: 'https://fonts.googleapis.com',
-          },
-        },
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preconnect',
-            href: 'https://fonts.gstatic.com',
-            crossorigin: '',
-          },
-        },
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'stylesheet',
-            href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-          },
-        },
         // Umami analytics — page views are tracked automatically by this script.
         // The site is built once and deployed to both staging and prod, so the
         // website id is baked in for both. data-domains scopes tracking to the
