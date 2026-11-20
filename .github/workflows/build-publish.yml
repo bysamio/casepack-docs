@@ -38,7 +38,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: bysamio/casepack-docs
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   # ─── Stage 1: Build & Type-check ────────────────────────────────
@@ -213,11 +213,22 @@ jobs:
       contents: read
 
     steps:
+      - name: Generate SamSoft App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.SAMMYEBY_AUTOMATION_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SAMMYEBY_AUTOMATION_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: charts
+          permission-contents: write
+          permission-pull-requests: write
+
       - name: Checkout charts repository
         uses: actions/checkout@v5
         with:
-          repository: bysamio/charts
-          token: ${{ secrets.CHARTS_REPO_TOKEN }}
+          repository: ${{ github.repository_owner }}/charts
+          token: ${{ steps.app-token.outputs.token }}
           path: charts
 
       - name: Update chart metadata
@@ -233,9 +244,9 @@ jobs:
           grep -E '^(version|appVersion):' "${CHART_DIR}/Chart.yaml"
 
       - name: Open charts pull request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.CHARTS_REPO_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           path: charts
           branch: automation/casepack-docs-${{ needs.build-and-push.outputs.version }}
           base: main
@@ -243,7 +254,7 @@ jobs:
           commit-message: "chore(casepack-docs): update chart to ${{ needs.build-and-push.outputs.version }}"
           title: "chore(casepack-docs): update chart to ${{ needs.build-and-push.outputs.version }}"
           body: |
-            Updates the `casepack-docs` Helm chart for image `ghcr.io/bysamio/casepack-docs:${{ needs.build-and-push.outputs.version }}`.
+            Updates the `casepack-docs` Helm chart for image `ghcr.io/${{ github.repository }}:${{ needs.build-and-push.outputs.version }}`.
 
             This PR was opened automatically after the release image was published.
           labels: |
