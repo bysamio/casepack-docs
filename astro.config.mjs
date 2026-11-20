@@ -23,10 +23,10 @@ export default defineConfig({
         './src/styles/custom.css',
       ],
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/bysamio/casepack-docs' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/sammyeby/casepack-docs' },
       ],
       editLink: {
-        baseUrl: 'https://github.com/bysamio/casepack-docs/edit/main/',
+        baseUrl: 'https://github.com/sammyeby/casepack-docs/edit/main/',
       },
       head: [
         // Umami analytics — page views are tracked automatically by this script.
