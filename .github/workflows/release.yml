@@ -32,7 +32,7 @@ jobs:
           # main is a protected branch (PR + review required). The default
           # GITHUB_TOKEN authenticates as github-actions[bot], which is NOT
           # exempt and gets rejected. RELEASE_TOKEN is a fine-grained PAT owned
-          # by bysamio (a repo admin), who IS exempt via enforce_admins:false —
+          # by sammyeby (the repo owner), who IS exempt via enforce_admins:false —
           # so the direct pushes to main below succeed. actions/checkout also
           # persists this token for the subsequent `git push` calls.
           token: ${{ secrets.RELEASE_TOKEN }}

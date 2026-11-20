@@ -2,7 +2,7 @@
 
 This repository owns the source and the staging/production Helm values in
 `helm/casepack-docs/`. The Argo CD Applications are managed in
-[`bysamio/argocd`](https://github.com/bysamio/argocd/tree/main/managed).
+[`sammyeby/argocd`](https://github.com/sammyeby/argocd/tree/main/managed).
 
 A published chart proposes a staging PR in the central repository. After the
 merged release reports the exact chart and values revisions as Synced and

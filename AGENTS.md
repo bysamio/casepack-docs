@@ -42,7 +42,7 @@ Every piece of agent work that takes more than one step gets its own folder in `
 | Images | sharp |
 | Container | Docker (nginx:alpine) |
 | Deploy | Helm chart + ArgoCD (staging/prod) |
-| CI/CD | GitHub Actions → GHCR image → Helm chart PR to `bysamio/charts` |
+| CI/CD | GitHub Actions → GHCR image → Helm chart PR to `sammyeby/charts` |
 
 ## Project Structure
 
@@ -86,19 +86,19 @@ There is no test suite. Verification for any change = `npm run check` + `npm run
 
 - Version lives in `package.json` (currently a `-dev` prerelease between releases).
 - Releases are cut via the `Release` GitHub Action (`workflow_dispatch` on `.github/workflows/release.yml`): bumps `package.json` to the release version, tags `vX.Y.Z`, pushes the commit and the tag to `main` in one atomic push, creates a GitHub Release, explicitly dispatches the release image build, then bumps `main` to the next `-dev` version.
-- `build-publish.yml` runs on every push/PR (type-check + build, then checks robots.txt, the sitemap and the llms files, and rebuilds with a throwaway draft page to confirm drafts stay unpublished); on `main`/tags it also builds & pushes a multi-arch Docker image to `ghcr.io/bysamio/casepack-docs`, and on tags opens a PR against `bysamio/charts` bumping the Helm chart version.
-- Don't hand-edit the chart version in `bysamio/charts` — that PR is automated.
+- `build-publish.yml` runs on every push/PR (type-check + build, then checks robots.txt, the sitemap and the llms files, and rebuilds with a throwaway draft page to confirm drafts stay unpublished); on `main`/tags it also builds & pushes a multi-arch Docker image to `ghcr.io/sammyeby/casepack-docs`, and on tags opens a PR against `sammyeby/charts` bumping the Helm chart version.
+- Don't hand-edit the chart version in `sammyeby/charts` — that PR is automated.
 
 ### Branch protection & the RELEASE_TOKEN secret
 
-`main` is a protected branch: PRs with 1 approval are required to merge, and force-push/deletion are blocked. Admins (`bysamio`) are exempt (`enforce_admins: false`), so they can still push directly. Non-admins — including outside contributors who use the "Edit page" link — must go through an approved PR.
+`main` is a protected branch: PRs with 1 approval are required to merge, and force-push/deletion are blocked. Admins (`sammyeby`, the owner) are exempt (`enforce_admins: false`), so they can still push directly. Non-admins — including outside contributors who use the "Edit page" link — must go through an approved PR.
 
-Because of this, the release job **cannot** use the default `GITHUB_TOKEN` to push to `main` (it authenticates as `github-actions[bot]`, which is not exempt and gets rejected with `GH006: Protected branch update failed`). Instead `release.yml` checks out with `secrets.RELEASE_TOKEN` — a **fine-grained PAT owned by `bysamio`** (a repo admin, hence exempt) scoped to this repo with **Contents: Read and write**.
+Because of this, the release job **cannot** use the default `GITHUB_TOKEN` to push to `main` (it authenticates as `github-actions[bot]`, which is not exempt and gets rejected with `GH006: Protected branch update failed`). Instead `release.yml` checks out with `secrets.RELEASE_TOKEN` — a **fine-grained PAT owned by `sammyeby`** (the repo owner, hence exempt; replaced on 2026-11-19 after the move) scoped to this repo with **Contents: Read and write**.
 
-- If a release fails on `git push` with a protected-branch error, `RELEASE_TOKEN` is almost certainly **missing or expired**. Fine-grained PATs expire (max 1 year) — rotate it and re-set the secret: `gh secret set RELEASE_TOKEN --repo bysamio/casepack-docs`.
+- If a release fails on `git push` with a protected-branch error, `RELEASE_TOKEN` is almost certainly **missing or expired**. Fine-grained PATs expire (max 1 year) — rotate it and re-set the secret: `gh secret set RELEASE_TOKEN --repo sammyeby/casepack-docs`.
 - `actions/checkout` persists `RELEASE_TOKEN`, so every `git push` in the job uses it, including the atomic push of the release commit and tag. Only `gh release create` and the workflow dispatches use the plain `GITHUB_TOKEN`. The release-image build is triggered by an **explicit `gh workflow run` dispatch** because `build-publish.yml` filters its tag trigger by `paths`, so relying on the tag push to auto-trigger it is unreliable.
-- The same branch protection is applied to `bysamio/charts`, `bysamio/images`, and `bysamio/casepack`. Those repos don't push to their own protected `main` in CI, so they don't need a `RELEASE_TOKEN` today.
+- The same branch protection is applied to `sammyeby/charts`, `sammyeby/images`, and `sammyeby/casepack`. Those repos don't push to their own protected `main` in CI, so they don't need a `RELEASE_TOKEN` today.
 
 ## Deployment
 
-Static site served by nginx (`nginx.conf` sets security headers, aggressive caching on hashed assets, `/healthz`). Environment values live in `infrastructure/helm/casepack-docs/`. The staging (`staging.docs.casepack.app`) and production (`docs.casepack.app`) Argo CD Applications live in [`bysamio/argocd`](https://github.com/bysamio/argocd/tree/main/managed) with a pinned chart version and full source commit SHA. Publishing the chart opens or updates a staging PR there. After that PR merges, live Argo CD health and a public smoke check gate a production PR. Review and merge each promotion PR; don't apply product Application manifests from this repository.
+Static site served by nginx (`nginx.conf` sets security headers, aggressive caching on hashed assets, `/healthz`). Environment values live in `infrastructure/helm/casepack-docs/`. The staging (`staging.docs.casepack.app`) and production (`docs.casepack.app`) Argo CD Applications live in [`sammyeby/argocd`](https://github.com/sammyeby/argocd/tree/main/managed) with a pinned chart version and full source commit SHA. Publishing the chart opens or updates a staging PR there. After that PR merges, live Argo CD health and a public smoke check gate a production PR. Review and merge each promotion PR; don't apply product Application manifests from this repository.
